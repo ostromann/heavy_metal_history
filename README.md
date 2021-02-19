@@ -10,7 +10,8 @@ This projects aims to demonstrate good software engineering practices (versionin
 - Getting started
   - [Install](#install)
   - [Usage](#usage)
-- About
+- Development Notes
+    - [Workpackages](#workpackages)
     - [Data Collection](#data-collection)
 - FAQ
     - [Do I need an API key?](#Do-I-need-an-API-key?)
@@ -20,10 +21,10 @@ This projects aims to demonstrate good software engineering practices (versionin
 # Getting started
 
 ## Install
-Install instruction goes here.
+Install instructions go here.
 
 ## Usage
-Usage instruction goes here.
+Usage instructions go here.
 
 # Development Notes
 
@@ -59,9 +60,9 @@ Right now you will need a personal API key for both Spotify's Web API and LastFM
 ## What counts as Heavy Metal?
 
 To give a broad overview of the genre all of the following subgenres of Heavy Metal are considered (taken from <a href="https://en.wikipedia.org/wiki/Heavy_metal_genres">
-Wikipedia</a> and extended by some sub Wikipedia sites. Can still be extended further):
+Wikipedia</a> and extended by some sub Wikipedia sites. Can still be extended):
 
-<ul>
+<ul style="list-style-type:none;">
         <li><details><summary>Alternative metal</summary>
         <p>
             <ul>
@@ -100,7 +101,7 @@ Wikipedia</a> and extended by some sub Wikipedia sites. Can still be extended fu
         <li><details><summary>Crust punk</summary>
         <p>
             <ul>
-                <li>-Blackened crust</li>
+                <li>Blackened crust</li>
             </ul>
         </p>
         </details></li>
