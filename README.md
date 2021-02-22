@@ -72,7 +72,7 @@ Wikipedia</a> and extended by some sub Wikipedia sites. Can still be extended):
             </ul>
         </p>
         </details></li>
-        <li>Avart-garde metal</li>
+        <li>Avant-garde metal</li>
         <li><details><summary>Black metal</summary>
         <p>
             <ul>
