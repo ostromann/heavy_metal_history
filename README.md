@@ -24,8 +24,12 @@ This projects aims to demonstrate good software engineering practices (versionin
 Install instructions go here.
 
 ## Usage
-Usage instructions go here.
-
+Run test routines with:
+```bash
+pytest -s tests/test_query_api.py
+```
+from the `metalhistory` directory.
+The `-s` option will output to screen any `print()` statement.
 # Development Notes
 
 ## Workpackages
