@@ -25,8 +25,8 @@ class LastFM():
 
         """
 
-        apy_key = self.authenticate_from_dotenv('LASTFM_API_KEY')
-        self.api_str = '&api_key=' + self.api_key
+        api_key = self.authenticate_from_dotenv('LASTFM_API_KEY')
+        self.api_str = '&api_key=' + api_key
         self.base_str = 'http://ws.audioscrobbler.com/2.0/?'
         pass
 
