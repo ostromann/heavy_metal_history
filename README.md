@@ -11,6 +11,7 @@ This projects aims to demonstrate good software engineering practices (versionin
   - [Install](#install)
   - [Usage](#usage)
 - Development Notes
+    - [Commit Convention](#commit-convention)
     - [Workpackages](#workpackages)
     - [Data Collection](#data-collection)
 - FAQ
@@ -31,6 +32,13 @@ pytest -s tests/test_query_api.py
 from the `metalhistory` directory.
 The `-s` option will output to screen any `print()` statement.
 # Development Notes
+
+## Commit Convention
+
+In general we follow the < ahref="https://www.conventionalcommits.org/en/v1.0.0/ ">Conventional Commits 1.0.0</a>.
+We use the following commit types:
+feat, fix, docs, test
+
 
 ## Workpackages
 
