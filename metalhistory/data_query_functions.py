@@ -1,6 +1,7 @@
 import requests
 from dotenv import load_dotenv
 import os
+import sys
 
 class LastFM():
     def __init__(self):
@@ -23,23 +24,29 @@ class LastFM():
         >>> lastfm.get_album_info('Black Sabbath', 'Paranoid', verbose=1)
 
         """
-        
-        self.authenticate_from_dotenv()
+
+        api_key = self.authenticate_from_dotenv('LASTFM_API_KEY')
+        self.api_str = '&api_key=' + api_key
         self.base_str = 'http://ws.audioscrobbler.com/2.0/?'
-        self.api_str = '&api_key='+self.api_key
         pass
 
 
 
-    def authenticate_from_dotenv(self):
+    def authenticate_from_dotenv(self, key_name):
         #TODO: Check if API key is present and valid!
         #TODO: Check if the services actually require Authentication. Many of them don't! e.g. https://www.last.fm/api/show/artist.search 
         """
         Load LastFM API from .env file
         """
-        load_dotenv()
-        self.api_key = os.getenv('LASTFM_API_KEY')
-        pass
+        # get path of the .env file
+        script_dir = os.path.dirname(__file__)
+        parent_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
+        env_path = os.path.join(parent_dir, '.env')
+        # load .env file from path
+        load_dotenv(dotenv_path=env_path)
+        api_key = os.getenv(key_name)
+
+        return str(api_key)
 
 
     def build_request(self,*, method, artist=None, album=None, track=None, format_spec='json', verbose=0):
