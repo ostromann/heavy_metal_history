@@ -31,11 +31,12 @@ pytest -s tests/test_query_api.py
 ```
 from the `metalhistory` directory.
 The `-s` option will output to screen any `print()` statement.
+
 # Development Notes
 
 ## Commit Convention
 
-In general we follow the < ahref="https://www.conventionalcommits.org/en/v1.0.0/ ">Conventional Commits 1.0.0</a>.
+In general we follow the <a href="https://www.conventionalcommits.org/en/v1.0.0/ ">Conventional Commits 1.0.0</a>.
 We use the following commit types:
 feat, fix, docs, test
 
@@ -43,6 +44,15 @@ feat, fix, docs, test
 ## Workpackages
 
 Keep track of this project's development on this <a href="https://trello.com/b/Ixw63lN3/history-of-heavy-metal">Trello board</a>.
+
+## Datasets
+Currently we have two lists of input data:
+
+
+[./data/artists_unfiltered.csv](./data/artists_unfiltered.csv) which contains a list of artists that have released at least 1 album that could be tagged as a subgenre of metal (See [What counts as Heavy Metal?](#What-counts-as-Heavy-Metal?)). This means that album tags should be checked before including all albums of an artist.
+
+[./data/MA_10k_albums.csv](./data/MA_10k_albums.csv) which contains the a list of 10,000 albums and their respective artists that received the highest Metascores on <a href="https://www.metal-archives.com/">Encyclopedia Metallum: The Metal Archives</a>.
+
 
 ## Data Collection
 
