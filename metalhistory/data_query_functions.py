@@ -49,25 +49,22 @@ class LastFM():
         return str(api_key)
 
 
-    def build_request(self,*, method, artist=None, album=None, track=None, format_spec='json', verbose=0):
-        #TODO: Verify validity of the built request string.
+    def build_request(self, method, format_spec='json', verbose=0, **kwargs):
+        # TODO: Make the function more general to handle all types of arguments
         """
-        Build an request string to pass to API.
+        Build a request string to pass to API. Note that the method-specific
+        API arguments are not validated here, this should be done beforehand.
 
         Parameters
         ----------
 
         method : API Method used (check https://www.last.fm/api)
 
-        artist : The artist name
-
-        track : The track name
-
-        album : The album name
-
         format_spec : Format specification (JSON or XML)
 
         verbose : Verbosity level (higher = more verbose)
+        
+        kwargs : Method-specific keyword arguments for the API request
 
         Returns
         ----------
@@ -77,12 +74,12 @@ class LastFM():
         """
         request_str = self.base_str + self.api_str + '&method='+method
 
-        if artist is not None:
-            request_str += '&artist='+self.clean_string(artist)
-        if album is not None:
-            request_str += '&album='+self.clean_string(album)
-        if track is not None:
-            request_str += '&track='+self.clean_string(track)
+        if 'artist' in kwargs.keys() and kwargs['artist'] is not None:
+            request_str += '&artist='+self.clean_string(kwargs['artist'])
+        if 'album' in kwargs.keys() and kwargs['album'] is not None:
+            request_str += '&album='+self.clean_string(kwargs['album'])
+        if 'track' in kwargs.keys() and kwargs['track'] is not None:
+            request_str += '&track='+self.clean_string(kwargs['track'])
         if format_spec is not None:
             if format_spec == 'json':
                 request_str += '&format=json'
@@ -90,6 +87,7 @@ class LastFM():
         if verbose > 0:
             print('Generated API Request:', request_str)
         return request_str
+
 
     def clean_string(self, string):
         """
@@ -133,32 +131,61 @@ class LastFM():
         request_str = self.build_request(method=method, artist=artist, album=album, verbose=verbose)
         return requests.get(request_str).json()
 
-    def get_album_info(self, artist, album, verbose=0):
-        #TODO: Check out the musicbrainz id option instead of album name
+
+    def get_album_info(self, verbose=0, **kwargs):
         """
-        Get the metadata and tracklist for an album on Last.fm using the album name. (Artist is optional!)
+        Get the metadata and tracklist for an album on Last.fm. The arguments
+        to the API request are specified as keyword arguments. See
+        https://www.last.fm/api/show/album.getInfo for a description of
+        required and optional arguments as well as combinations thereof.
 
         Parameters
         ----------
 
-        artist : The artist name
-
-        album : The album name
-
         verbose : Verbosity level (higher = more verbose)
+        
+        kwargs : Keyword arguments specifying the album.getInfo API request
+        
+        Raises
+        ----------
+        
+        ValueError : If the arguments are not valid
 
         Returns
         ----------
         dict
             Album info
-        """  
-
+        """
+        
+        # Check that all keyword arguments are valid
+        valid_args = ['artist', 'album', 'mbid', 'autocorrect', 'username', 'lang']
+        for key in kwargs.keys():
+            if key not in valid_args:
+                raise ValueError('%s is not in the list of valid keyword arguments.' % key)
+        
+        # If mbid is specified, validate that none of artis/album are specified simultaneously
+        mbid = kwargs['mbid'] if 'mbid' in kwargs.keys() else None
+        if mbid is not None and any(x in kwargs.keys() for x in ['artist', 'album']):
+            raise ValueError('mbid was given together with artist or album.\n' + \
+                             'Specify either mbid only, or both artist+album.')
+        
+        # If mbid is not specified, check that both artist/album are specified
+        if mbid is None and not all(x in kwargs.keys() for x in ['artist', 'album']):
+            raise ValueError('Neither mbid nor artist+album was specified.\n' + \
+                             'Specify either mbid only, or both artist+album.')
+        
+        # Check that autocorrect is either 0 or 1
+        autocorrect = kwargs['autocorrect'] if 'autocorrect' in kwargs.keys() else None
+        if autocorrect is not None and autocorrect not in [0, 1, 0., 1., '0', '1']:
+            raise ValueError('autocorrect argument must be either 0 or 1.')
+        
         method = 'album.getinfo'
         try:
-            r_data = requests.get(self.build_request(method=method, artist=artist, album=album, verbose=verbose)).json()['album']
+            r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['album']
         except KeyError:
             r_data = np.nan
         return r_data
+
 
     def get_track_info(self, artist, album, track, verbose=0):
         #TODO: Check out the musicbrainz id option instead of track name
