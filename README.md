@@ -12,6 +12,7 @@ This projects aims to demonstrate good software engineering practices (versionin
   - [Usage](#usage)
 - Development Notes
     - [Commit Convention](#commit-convention)
+    - [Branch Convention](#branch-convention)
     - [Workpackages](#workpackages)
     - [Data Collection](#data-collection)
 - FAQ
@@ -39,6 +40,13 @@ The `-s` option will output to screen any `print()` statement.
 In general we follow the <a href="https://www.conventionalcommits.org/en/v1.0.0/ ">Conventional Commits 1.0.0</a>.
 We use the following commit types:
 feat, fix, docs, test
+
+
+## Branch Convention
+
+We draw some inspiration from <a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Gitflow</a> and use two permanent branches, namely *master* and *stable*. For each new feature we create a new temporary branch of master named *type/scope* where *type* is one of feature/fix/doc or similar, and *scope* is a brief name for the feature. The name is written in small letters and words are separated by hyphen (-). An example branch name is *feature/word-cloud-visualization*.
+
+When enough features have been implemented for a release, we merge the master branch with the stable branch and increment the release version.
 
 
 ## Workpackages
