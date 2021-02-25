@@ -107,19 +107,19 @@ class LastFM():
         return str(string).strip().replace('&','%26')
         
 
-    def get_album_matches(self, artist, album, verbose=0):
-        #TODO: encode be explicit which parameters are mandatory and optional
+    def get_album_matches(self, verbose=0, **kwargs):
         """
-        Search for an album by name. (Artist is optional!). Returns album matches sorted by relevance.
+        Search for an album by name. Returns album matches sorted by relevance.
+        The arguments to the API request are specified as keyword arguments.
+        See https://www.last.fm/api/show/album.search for a description of
+        required and optional arguments as well as combinations thereof.
 
         Parameters
         ----------
 
-        artist : The artist name
-
-        album : The album name
-
         verbose : Verbosity level (higher = more verbose)
+        
+        kwargs : Keyword arguments specifying the album.search API request
 
         Returns
         ----------
@@ -127,8 +127,18 @@ class LastFM():
             Album matches sorted by relevance
         """
 
+        # Check that all keyword arguments are valid
+        valid_args = ['limit', 'page', 'album']
+        for key in kwargs.keys():
+            if key not in valid_args:
+                raise ValueError('%s is not in the list of valid keyword arguments.' % key)
+        
+        # Check that an album is specified
+        if 'album' not in kwargs.keys():
+            raise ValueError('An album must be specified.')
+        
         method = 'album.search'
-        request_str = self.build_request(method=method, artist=artist, album=album, verbose=verbose)
+        request_str = self.build_request(method=method, verbose=verbose, **kwargs)
         return requests.get(request_str).json()
 
 
