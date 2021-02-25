@@ -45,6 +45,15 @@ feat, fix, docs, test
 
 Keep track of this project's development on this <a href="https://trello.com/b/Ixw63lN3/history-of-heavy-metal">Trello board</a>.
 
+## Datasets
+Currently we have two lists of input data:
+
+
+[./data/artists_unfiltered.csv](./data/artists_unfiltered.csv) which contains a list of artists that have released at least 1 album that could be tagged as a subgenre of metal (See [What counts as Heavy Metal?](#What-counts-as-Heavy-Metal?))
+
+[./data/MetalArchives_top_10000_albums.csv](./data/MetalArchives_top_10000_albums.csv) which contains the a list of 10,000 albums and their respective artists that received the highest Metascores on <a href="https://www.metal-archives.com/">Encyclopedia Metallum: The Metal Archives</a>
+
+
 ## Data Collection
 
 The data will be collected using <a href="https://developer.spotify.com/documentation/web-api/">Spotify's Web API</a> and  <a href="https://www.last.fm/api">LastFM's Web API</a>.
