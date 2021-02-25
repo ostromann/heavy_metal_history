@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import numpy as np
 import os
 import sys
+import numpy as np
 
 class LastFM():
     def __init__(self):
