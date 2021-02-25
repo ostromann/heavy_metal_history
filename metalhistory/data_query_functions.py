@@ -121,6 +121,11 @@ class LastFM():
         
         kwargs : Keyword arguments specifying the album.search API request
 
+        Raises
+        ----------
+        
+        ValueError : If the arguments are not valid
+
         Returns
         ----------
         dict
@@ -173,7 +178,7 @@ class LastFM():
             if key not in valid_args:
                 raise ValueError('%s is not in the list of valid keyword arguments.' % key)
         
-        # If mbid is specified, validate that none of artis/album are specified simultaneously
+        # If mbid is specified, validate that none of artist/album are specified simultaneously
         mbid = kwargs['mbid'] if 'mbid' in kwargs.keys() else None
         if mbid is not None and any(x in kwargs.keys() for x in ['artist', 'album']):
             raise ValueError('mbid was given together with artist or album.\n' + \
@@ -197,31 +202,56 @@ class LastFM():
         return r_data
 
 
-    def get_track_info(self, artist, album, track, verbose=0):
-        #TODO: Check out the musicbrainz id option instead of track name
+    def get_track_info(self, verbose=0, **kwargs):
         """
-        Get the metadata for a track on Last.fm using the artist/track name.
+        Get the metadata for a track on Last.fm. The arguments to the API
+        request are specified as keyword arguments. See
+        https://www.last.fm/api/show/track.getInfo for a description of
+        required and optional arguments as well as combinations thereof.
 
         Parameters
         ----------
 
-        artist : The artist name
-
-        album : The album name
-
-        track : The track name
-
         verbose : Verbosity level (higher = more verbose)
+        
+        kwargs : Keyword arguments specifying the track.getInfo API request
+        
+        Raises
+        ----------
+        
+        ValueError : If the arguments are not valid
 
         Returns
         ----------
         dict
             Track info.
         """
-
+        
+        # Check that all keyword arguments are valid
+        valid_args = ['mbid', 'track', 'artist', 'username', 'autocorrect']
+        for key in kwargs.keys():
+            if key not in valid_args:
+                raise ValueError('%s is not in the list of valid keyword arguments.' % key)
+        
+        # If mbid is specified, validate that none of artist/track are specified simultaneously
+        mbid = kwargs['mbid'] if 'mbid' in kwargs.keys() else None
+        if mbid is not None and any(x in kwargs.keys() for x in ['artist', 'track']):
+            raise ValueError('mbid was given together with artist or track.\n' + \
+                             'Specify either mbid only, or both artist+track.')
+        
+        # If mbid is not specified, check that both artist/track are specified
+        if mbid is None and not all(x in kwargs.keys() for x in ['artist', 'track']):
+            raise ValueError('Neither mbid nor artist+track was specified.\n' + \
+                             'Specify either mbid only, or both artist+track.')
+        
+        # Check that autocorrect is either 0 or 1
+        autocorrect = kwargs['autocorrect'] if 'autocorrect' in kwargs.keys() else None
+        if autocorrect is not None and autocorrect not in [0, 1, 0., 1., '0', '1']:
+            raise ValueError('autocorrect argument must be either 0 or 1.')
+        
         method = 'track.getinfo'
         try:
-            r_data = requests.get(self.build_request(method=method, track=track, artist=artist, album=album, verbose=verbose)).json()['track']
+            r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['track']
         except KeyError:
             r_data = np.nan
 
