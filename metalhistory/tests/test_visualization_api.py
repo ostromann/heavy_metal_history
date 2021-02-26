@@ -36,16 +36,17 @@ def test_prune():
     Test the prune_N function
     """
     vis = Visualize(data_path)
-    df = vis.load_dataframe()
 
-    # the oracle knows that Iron Maiden is the group with most albums
+    # the oracle knows that Iron Maiden has published 38 albums
     oracle_artist = 'Iron Maiden'
+    oracle_albums = 38
 
-    df = vis.prune_N(38)
-    artist = df.index[0]
+    # so we prune the dataset and once it is grouped by N. of albums, we check that Iron Maiden is there
+    df = vis.prune_N(oracle_albums)
+    artist_df = df.groupby('artist')
+    artist_by_count = artist_df.count().sort_values(by='MA_score', ascending=False)
 
-    assert oracle_artist == artist
-
+    assert oracle_artist == artist_by_count.index[0]
 
 
 def test_artist_cloud(threshold=20, path='./'):

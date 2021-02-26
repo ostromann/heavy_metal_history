@@ -39,20 +39,22 @@ class Visualize():
         return df
 
 
-    def prune_N(self, n=5):
+    def prune_N(self, n=15):
         """
-        Prune the dataset from the artists with N<n albums.
+        Return the dataset of the artists with N>=n albums.
         """
 
         df = self.load_dataframe()
         # Groupby by artist
-        artist = df.groupby('artist')
+        artist_df = df.groupby('artist')
         # sort artist by album count
-        artist = artist.count().sort_values(by='album', ascending=False)
-        artist.drop(artist[artist.album < n].index, inplace=True)
+        artist_by_count = artist_df.count().sort_values(by='album', ascending=False)
+        # save the dataframe with discarded artists
+        discarded = artist_by_count.drop(artist_by_count[artist_by_count.album >= n].index)
+        for artist in discarded.index:
+            df = df.drop(artist_df.get_group(artist).index)
 
-        return artist
-
+        return df
 
 
     def album_cloud(self, threshold=20, path='./'):
