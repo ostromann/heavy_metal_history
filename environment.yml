@@ -65,6 +65,7 @@ dependencies:
   - sqlite=3.34.0=h74cdb3f_0
   - tk=8.6.10=h21135ba_1
   - tornado=6.1=py38h497a2fe_1
+  - tqdm=4.57.0=pyhd8ed1ab_0
   - traitlets=5.0.5=py_0
   - urllib3=1.26.3=pyhd8ed1ab_0
   - wcwidth=0.2.5=pyh9f0ad1d_2
