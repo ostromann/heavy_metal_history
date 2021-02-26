@@ -2,7 +2,7 @@
 Class allowing some nice visualization of heavy metal data
 """
 
-from data_query_functions import LastFM
+from .data_query_functions import LastFM
 
 # visualization libraries
 import numpy as np
@@ -34,7 +34,7 @@ class Visualize():
         """
         Import the csv as dataframe
         """
-        df = pd.read_csv(self.dataset, index_col=0)
+        df = pd.read_csv(self.dataset)
 
         return df
 
