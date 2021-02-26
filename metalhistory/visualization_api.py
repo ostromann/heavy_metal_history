@@ -14,7 +14,7 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
 class Visualize():
-    def __init__(self, dataset):
+    def __init__(self, csv='data.csv'):
         """
         Create Visualize object that can be used to visualize the data.
 
@@ -24,8 +24,19 @@ class Visualize():
 
         """
 
-        #TODO: will be used in more advanced phase of the project
-        self.dataset = dataset
+        try:
+            self.dataset = csv
+        except FileNotFoundError:
+            print("The specified file could not be loaded.")
+
+
+    def load_dataframe(self):
+        """
+        Import the csv as dataframe
+        """
+        df = pd.read_csv(self.dataset, index_col=0)
+
+        return df
 
 
     def artist_cloud(self, threshold=20, path='./'):
