@@ -31,6 +31,23 @@ def test_load_dataset():
     assert oracle_score == df['MA_score'][0]
 
 
+def test_prune():
+    """
+    Test the prune_N function
+    """
+    vis = Visualize(data_path)
+    df = vis.load_dataframe()
+
+    # the oracle knows that Iron Maiden is the group with most albums
+    oracle_artist = 'Iron Maiden'
+
+    df = vis.prune_N(38)
+    artist = df.index[0]
+
+    assert oracle_artist == artist
+
+
+
 def test_artist_cloud(threshold=20, path='./'):
     """
     Test the artist word cloud.
@@ -38,12 +55,12 @@ def test_artist_cloud(threshold=20, path='./'):
 
 
 def test_album_cloud(threshold=20, path='./'):
-     """
+    """
     Test the album word cloud.
     """
 
 
 def test_genre_cloud(threshold=20, path='./'):
-     """
+    """
     Test the genres word cloud.
     """
