@@ -1,5 +1,6 @@
 import requests
 from dotenv import load_dotenv
+import numpy as np
 import os
 import sys
 
@@ -50,7 +51,6 @@ class LastFM():
 
 
     def build_request(self, method, format_spec='json', verbose=0, **kwargs):
-        # TODO: Make the function more general to handle all types of arguments
         """
         Build a request string to pass to API. Note that the method-specific
         API arguments are not validated here, this should be done beforehand.
@@ -73,13 +73,10 @@ class LastFM():
 
         """
         request_str = self.base_str + self.api_str + '&method='+method
-
-        if 'artist' in kwargs.keys() and kwargs['artist'] is not None:
-            request_str += '&artist='+self.clean_string(kwargs['artist'])
-        if 'album' in kwargs.keys() and kwargs['album'] is not None:
-            request_str += '&album='+self.clean_string(kwargs['album'])
-        if 'track' in kwargs.keys() and kwargs['track'] is not None:
-            request_str += '&track='+self.clean_string(kwargs['track'])
+        
+        for key in kwargs.keys():
+            request_str += '&' + key + '=' + self.clean_string(kwargs[key])
+        
         if format_spec is not None:
             if format_spec == 'json':
                 request_str += '&format=json'
