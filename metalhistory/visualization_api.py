@@ -57,13 +57,22 @@ class Visualize():
         return df
 
 
-    def album_cloud(self, threshold=20, path='./'):
-        #TODO: implement this with a real dataset
+    def artist_average(self, n_albums=20, path='./artist_average.png'):
         """
-        Visualize a world cloud with album names.
-        The album names correspond to the most influential ones, from 1 to threshold.
-        The figure will be saved in the specified path.
+        Visualize a histogram plot with artist names.
+        Artist are scored based on the average of the MA score of each album
         """
+
+        df = self.prune_N(n_albums)
+        artist_df = df.groupby('artist')
+
+        plt.figure(figsize=(15,12))
+        artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"].plot.bar()
+        plt.xticks(rotation=70)
+        plt.title("Best artist with at least " + str(n_albums) + " albums.")
+        plt.xlabel("")
+        plt.ylabel("Average MA score")
+        plt.savefig(path)
 
 
     def album_cloud(self, threshold=20, path='./'):
