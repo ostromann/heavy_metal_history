@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import numpy as np
 import os
 import sys
+import urllib.parse
 
 class LastFM():
     def __init__(self):
@@ -101,7 +102,7 @@ class LastFM():
         string
             Cleaned string.
         """
-        return str(string).strip().replace('&','%26')
+        return urllib.parse.quote(str(string).strip())
         
 
     def get_album_matches(self, verbose=0, **kwargs):
