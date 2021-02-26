@@ -10,9 +10,9 @@ import pandas as pd
 
 
 # get path of the dataset
-script_dir = os.path.dirname(__file__)
-parent_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
-data_path = os.path.join(parent_dir, '/data/MA_10k_albums.csv')
+root_dir = os.path.abspath(__file__ + "/../../../")
+data_path = root_dir + '/data/MA_10k_albums.csv'
+
 
 def test_load_dataset():
     """
@@ -21,7 +21,14 @@ def test_load_dataset():
     vis = Visualize(data_path)
     df = vis.load_dataframe()
 
-    df.head()
+    # the oracle has knows the first raw of the dataset
+    oracle_artist = 'Slayer'
+    oracle_album = 'Reign in Blood'
+    oracle_score = 36.01
+
+    assert oracle_artist == df['artist'][0]
+    assert oracle_album == df['album'][0]
+    assert oracle_score == df['MA_score'][0]
 
 
 def test_artist_cloud(threshold=20, path='./'):
