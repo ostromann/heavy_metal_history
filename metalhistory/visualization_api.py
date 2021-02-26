@@ -39,14 +39,30 @@ class Visualize():
         return df
 
 
-    def artist_cloud(self, threshold=20, path='./'):
+    def prune_N(self, n=5):
+        """
+        Prune the dataset from the artists with N<n albums.
+        """
+
+        df = self.load_dataframe()
+        # Groupby by artist
+        artist = df.groupby('artist')
+        # sort artist by album count
+        artist = artist.count().sort_values(by='album', ascending=False)
+        artist.drop(artist[artist.album < n].index, inplace=True)
+
+        return artist
+
+
+
+    def album_cloud(self, threshold=20, path='./'):
         #TODO: implement this with a real dataset
         """
-        Visualize a world cloud with artist names.
-        The artist names correspond to the most influential ones, from 1 to threshold.
+        Visualize a world cloud with album names.
+        The album names correspond to the most influential ones, from 1 to threshold.
         The figure will be saved in the specified path.
         """
-    
+
 
     def album_cloud(self, threshold=20, path='./'):
         #TODO: implement this with a real dataset
