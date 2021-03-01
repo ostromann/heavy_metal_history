@@ -167,7 +167,57 @@ def test_get_album_info_autocorrect():
                                          autocorrect=2)
 
 
-def test_get_track_info():
+def test_get_track_info_return_types():
     """
-    Test the get_track_info function
+    Test that the get_track_info function returns correct data types.
     """
+    lastFM_obj = LastFM()
+    info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
+    assert type(info) is dict
+    assert 'name' in info.keys()
+    assert type(info['name']) is str
+    assert 'artist' in info.keys()
+    assert type(info['artist']) is dict
+
+
+def test_get_track_info_invalid_args():
+    """
+    Test that the get_track_info function raises a ValueError if invalid
+    arguments are given.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs',
+                                         invalid_arg='invalid_arg')
+
+
+def test_get_track_info_required_args():
+    """
+    Test that the get_track_info function raises a ValueError if required
+    arguments are not specified.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_track_info(artist='Black Sabbath')
+
+
+def test_get_track_info_combined_args():
+    """
+    Test that the get_track_info function raises a ValueError if mbid is
+    specified together with artist/track.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs',
+                                         mbid='c2786bd8-7dc7-4633-ab6c-70c70ebd432f')
+
+
+def test_get_track_info_autocorrect():
+    """
+    Test that the get_track_info function raises a ValueError if the
+    autocorrect argument is given a value other than 0 or 1.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs',
+                                         autocorrect=2)
