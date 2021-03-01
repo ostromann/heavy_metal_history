@@ -26,7 +26,6 @@ def test_authenticate():
     oracle_key = 'thisIsTheOracleKey123'
     lastFM_obj = LastFM()
     api_key = lastFM_obj.authenticate_from_dotenv('ORACLE_KEY')
-
     assert oracle_key == api_key
 
 
@@ -70,8 +69,13 @@ def test_build_request_non_clean_input():
 
 def test_clean_string():
     """
-    Test the clean_string function
+    Test the clean_string function.
     """
+    lastFM_obj = LastFM()
+    dirty_str = '  text with bad formattiñg!  '
+    correct_str = 'text%20with%20bad%20formatti%C3%B1g%21'
+    cleaned_str = lastFM_obj.clean_string(dirty_str)
+    assert cleaned_str == correct_str
 
 
 def test_get_album_matches():
@@ -84,6 +88,7 @@ def test_get_album_info():
     """
     Test the get_album_info function
     """
+
 
 def test_gget_track_info():
     """
