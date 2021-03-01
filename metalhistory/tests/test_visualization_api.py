@@ -7,7 +7,7 @@ from metalhistory.visualization_api import Visualize
 import os
 import sys
 import pandas as pd
-
+import matplotlib.pyplot as plt
 
 # get path of the dataset
 root_dir = os.path.abspath(__file__ + "/../../../")
@@ -49,10 +49,15 @@ def test_prune():
     assert oracle_artist == artist_by_count.index[0]
 
 
-def test_artist_cloud(threshold=20, path='./'):
+def test_artist_cloud():
     """
     Test the artist word cloud.
     """
+
+    vis = Visualize(data_path)
+    n_albums = 15
+
+    vis.artist_barplot(n_albums)
 
 
 def test_album_cloud(threshold=20, path='./'):

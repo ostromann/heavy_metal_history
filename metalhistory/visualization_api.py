@@ -57,7 +57,7 @@ class Visualize():
         return df
 
 
-    def artist_average(self, n_albums=20, path='./artist_average.png'):
+    def artist_barplot(self, n_albums=20, path='./artist_average.png'):
         """
         Visualize a histogram plot with artist names.
         Artist are scored based on the average of the MA score of each album
