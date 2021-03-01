@@ -49,15 +49,28 @@ def test_prune():
     assert oracle_artist == artist_by_count.index[0]
 
 
-def test_artist_cloud():
+def test_artist_barplot():
     """
-    Test the artist word cloud.
+    Test the artist bar plot function.
     """
 
     vis = Visualize(data_path)
     n_albums = 15
+    test_path = './test_artist_barplot.svg'
 
-    vis.artist_barplot(n_albums)
+    vis.artist_barplot(n_albums, test_path)
+
+def test_artist_cloud():
+    """
+    Test the artist cloud function.
+    """
+
+    vis = Visualize(data_path)
+    n_albums = 15
+    words = 30
+    test_path = './test_artist_cloud.svg'
+
+    vis.artist_cloud(n_albums, words, test_path)
 
 
 def test_album_cloud(threshold=20, path='./'):
