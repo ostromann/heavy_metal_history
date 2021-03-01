@@ -3,6 +3,7 @@ Test routines for the LastFM class
 """
 
 import os
+import pytest
 from dotenv import load_dotenv
 from metalhistory.data_query_functions import LastFM
 
@@ -78,10 +79,36 @@ def test_clean_string():
     assert cleaned_str == correct_str
 
 
-def test_get_album_matches():
+def test_get_album_matches_return_types():
     """
-    Test the get_album_matches function
+    Test that the get_album_matches function returns correct data types.
     """
+    lastFM_obj = LastFM()
+    matches = lastFM_obj.get_album_matches(album='Paranoid')
+    assert type(matches) is dict
+    assert 'results' in matches.keys()
+    assert type(matches['results']) is dict
+    assert 'albummatches' in matches['results'].keys()
+
+
+def test_get_album_matches_invalid_args():
+    """
+    Test that the get_album_matches function raises a ValueError if invalid
+    arguments are given.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        matches = lastFM_obj.get_album_matches(artist='Black Sabbath', album='Paranoid')
+
+
+def test_get_album_matches_required_args():
+    """
+    Test that the get_album_matches function raises a ValueError if a required
+    argument was not specified.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        matches = lastFM_obj.get_album_matches(verbose=0)
 
 
 def test_get_album_info():
