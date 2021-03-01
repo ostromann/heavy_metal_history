@@ -56,9 +56,11 @@ def test_artist_barplot():
 
     vis = Visualize(data_path)
     n_albums = 15
+    n_artists = 30
     test_path = './test_artist_barplot.svg'
 
-    vis.artist_barplot(n_albums, test_path)
+    vis.artist_barplot(n_albums, n_artists, test_path)
+
 
 def test_artist_cloud():
     """
@@ -70,7 +72,7 @@ def test_artist_cloud():
     words = 30
     test_path = './test_artist_cloud.svg'
 
-    vis.artist_cloud(n_albums, words, test_path)
+    vis.artist_cloud(words, n_albums, test_path)
 
 
 def test_album_cloud(threshold=20, path='./'):

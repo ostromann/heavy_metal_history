@@ -57,22 +57,36 @@ class Visualize():
         return df
 
 
-    def artist_barplot(self, n_albums=20, path='artist_bar.svg'):
+    def artist_barplot(self, n_albums=15, n_artists=30, path='artist_bar.svg'):
         """
-        Visualize a histogram plot with artist names.
-        Artist are scored based on the average of the MA score of each album
+        Visualize a histogram plot with 'n_artists' artist names that have published at least 'n_albums' albums.
+        Artist are scored based on the average of the MA score of each album.
+        Average, Max and Min values are plotted.
         """
 
         df = self.prune_N(n_albums)
         artist_df = df.groupby('artist')
 
-        plt.figure(figsize=(15,12))
-        artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"].plot.bar()
+        # manipulate DF to retain useful statistics for the plot
+        artist_description = artist_df.describe()
+        artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
+        artist_sorted = artist_description.sort_values(by=("MA_score", "mean"), ascending=False)
+        # drop upper level in columns names
+        artist_sorted.columns = artist_sorted.columns.droplevel()
+        # keep the requested number of artists
+        # note that n_artists is higher than the size of the dataframe, no exception is raised
+        artist_sorted = artist_sorted.head(n_artists)
+
+
+        plt.figure(figsize=(300,100))
+        artist_sorted.plot.bar()
         plt.xticks(rotation=70)
-        plt.title("Best artist with at least " + str(n_albums) + " albums.")
+        plt.title("Statistics on artists with at least " + str(n_albums) + " albums.")
         plt.xlabel("")
-        plt.ylabel("Average MA score")
+        plt.ylabel("MA score")
+        plt.tight_layout()
         plt.savefig(path)
+        plt.close("all")
 
 
     def artist_cloud(self, words_limit=20, min_albums=15, path='artist_cloud.svg'):
@@ -88,6 +102,7 @@ class Visualize():
         artist_df = df.groupby('artist')
 
         artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+        artist_df = artist_df.head(words_limit)
         index_obj = artist_df.index
         index_list = []
 
@@ -113,6 +128,7 @@ class Visualize():
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis("off")
         plt.savefig(path)
+        plt.close("all")
 
 
     def album_cloud(self, threshold=20, path='./'):
