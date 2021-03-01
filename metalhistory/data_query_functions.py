@@ -141,8 +141,12 @@ class LastFM():
             raise ValueError('An album must be specified.')
         
         method = 'album.search'
-        request_str = self.build_request(method=method, verbose=verbose, **kwargs)
-        return requests.get(request_str).json()
+
+        response = requests.get(self.build_request(method=method, verbose=verbose, **kwargs))
+        if not response.ok:
+            raise RuntimeError('LastFM API responded with status code %s.' % (response.status_code))
+
+        return response.json()
 
 
     def get_album_info(self, verbose=0, **kwargs):
@@ -193,8 +197,13 @@ class LastFM():
             raise ValueError('autocorrect argument must be either 0 or 1.')
         
         method = 'album.getinfo'
+
+        response = requests.get(self.build_request(method=method, verbose=verbose, **kwargs))
+        if not response.ok:
+            raise RuntimeError('LastFM API responded with status code %s.' % (response.status_code))
+
         try:
-            r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['album']
+            r_data = response.json()['album']
         except KeyError:
             r_data = np.nan
         return r_data
@@ -248,10 +257,13 @@ class LastFM():
             raise ValueError('autocorrect argument must be either 0 or 1.')
         
         method = 'track.getinfo'
+
+        response = requests.get(self.build_request(method=method, verbose=verbose, **kwargs))
+        if not response.ok:
+            raise RuntimeError('LastFM API responded with status code %s.' % (response.status_code))
+
         try:
-            r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['track']
+            r_data = response.json()['track']
         except KeyError:
             r_data = np.nan
-
         return r_data
-
