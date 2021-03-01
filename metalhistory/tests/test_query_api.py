@@ -111,13 +111,63 @@ def test_get_album_matches_required_args():
         matches = lastFM_obj.get_album_matches(verbose=0)
 
 
-def test_get_album_info():
+def test_get_album_info_return_types():
     """
-    Test the get_album_info function
+    Test that the get_album_info function returns correct data types.
     """
+    lastFM_obj = LastFM()
+    info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
+    assert type(info) is dict
+    assert 'name' in info.keys()
+    assert type(info['name']) is str
+    assert 'tracks' in info.keys()
+    assert type(info['tracks']) is dict
 
 
-def test_gget_track_info():
+def test_get_album_info_invalid_args():
+    """
+    Test that the get_album_info function raises a ValueError if invalid
+    arguments are given.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
+                                         invalid_arg='invalid_arg')
+
+
+def test_get_album_info_required_args():
+    """
+    Test that the get_album_info function raises a ValueError if required
+    arguments are not specified.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_album_info(artist='Black Sabbath')
+
+
+def test_get_album_info_combined_args():
+    """
+    Test that the get_album_info function raises a ValueError if mbid is
+    specified together with artist/album.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
+                                         mbid='2982b682-36ea-3605-b959-04e746736070')
+
+
+def test_get_album_info_autocorrect():
+    """
+    Test that the get_album_info function raises a ValueError if the
+    autocorrect argument is given a value other than 0 or 1.
+    """
+    lastFM_obj = LastFM()
+    with pytest.raises(ValueError):
+        info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
+                                         autocorrect=2)
+
+
+def test_get_track_info():
     """
     Test the get_track_info function
     """
