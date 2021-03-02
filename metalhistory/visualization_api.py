@@ -5,9 +5,8 @@ Class allowing some nice visualization of heavy metal data
 from .data_query_functions import LastFM
 
 # visualization libraries
-import numpy as np
 import pandas as pd
-from os import path
+import os
 from PIL import Image
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
@@ -28,6 +27,8 @@ class Visualize():
             self.dataset = csv
         except FileNotFoundError:
             print("The specified file could not be loaded.")
+
+        # TODO: check which variables could be defined here, e.g. paths
 
 
     def load_dataframe(self):
@@ -89,12 +90,13 @@ class Visualize():
         plt.close("all")
 
 
-    def artist_cloud(self, words_limit=20, min_albums=15, path='artist_cloud.svg'):
-        #TODO: implement this with a real dataset
+    def artist_quantity_cloud(self, words_limit=20, min_albums=15, path='artist_qtcloud.svg'):
+        # TODO: merge this function with the quality cloud by adding a sorting method in the parameters
         """
         Visualize a world cloud with artist names.
-        The artist names correspond to the most influential ones, from 1 to 'ords_limits'.
+        The artist names displayed depend on the number of albums published.
         The atists are selected such that they published at least 'min_albums' albums.
+        Up to 'words_limit' names are displayed.
         The figure will be saved in the specified path.
         """
 
@@ -103,10 +105,12 @@ class Visualize():
 
         artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
         artist_df = artist_df.head(words_limit)
+        # the dataframe is indexed with the artists names that we need to access
         index_obj = artist_df.index
         index_list = []
 
-        txt_path = 'artist_cloud.txt'
+        file_dir = os.path.abspath(__file__ + "/../")
+        txt_path = file_dir + '/artist_qtcloud.txt'
         # cancel the file if it exists
         out_file = open(txt_path, 'w')
         out_file.write("")
@@ -115,6 +119,53 @@ class Visualize():
             # replace space with tabs so that artists names with multiple words are counted as a single entity
             index_list.append(name.replace(' ', '_'))
             count = artist_df.loc[name]
+            # create a file.txt containing artists names repeated N times where N is the number of published albums
+            out_file = open(txt_path, 'a')
+            for i in range(count):
+                out_file.write(index_list[-1] + " ")
+
+        # create and generate a word cloud image
+        out_file = open(txt_path, 'r')
+        contents = out_file.read()
+        wordcloud = WordCloud(collocations=False, max_words=words_limit).generate(contents)
+
+        # Display the generated image:
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis("off")
+        plt.savefig(path)
+        plt.close("all")
+
+
+    def artist_quality_cloud(self, words_limit=20, min_albums=15, path='artist_qlcloud.svg'):
+        # TODO: merge this function with the quantity cloud by adding a sorting method in the parameters
+        """
+        Visualize a world cloud with artist names.
+        The artist names displayed depend on the score average of albums published.
+        The atists are selected such that they published at least 'min_albums' albums.
+        Up to 'words_limit' names are displayed.
+        The figure will be saved in the specified path.
+        """
+
+        df = self.prune_N(min_albums)
+        artist_df = df.groupby('artist')
+
+        artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
+        artist_df = artist_df.head(words_limit)
+        # the dataframe is indexed with the artists names that we need to access
+        index_obj = artist_df.index
+        index_list = []
+
+        file_dir = os.path.abspath(__file__ + "/../")
+        txt_path = file_dir + '/artist_qlcloud.txt'
+        # cancel the file if it exists
+        out_file = open(txt_path, 'w')
+        out_file.write("")
+        
+        for name in index_obj:
+            # replace space with tabs so that artists names with multiple words are counted as a single entity
+            index_list.append(name.replace(' ', '_'))
+            # create a file.txt containing artists names repeated N times where N is the number of published albums
+            count = round(artist_df.loc[name])
             out_file = open(txt_path, 'a')
             for i in range(count):
                 out_file.write(index_list[-1] + " ")
@@ -131,17 +182,7 @@ class Visualize():
         plt.close("all")
 
 
-    def album_cloud(self, threshold=20, path='./'):
-        #TODO: implement this with a real dataset
-        """
-        Visualize a world cloud with album names.
-        The album names correspond to the most influential ones, from 1 to threshold.
-        The figure will be saved in the specified path.
-        """
-
-
     def genre_cloud(self, threshold=20, path='./'):
-        #TODO: implement this with a real dataset
         """
         Visualize a world cloud with genre names.
         The genre names correspond to the most influential ones, from 1 to threshold.

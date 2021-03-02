@@ -75,9 +75,9 @@ def test_artist_barplot():
     assert oracle_isthere == test_file.is_file()
 
 
-def test_artist_cloud():
+def test_artist_qtcloud():
     """
-    Test the artist cloud function.
+    Test the artist quantity cloud function.
     """
 
     vis = Visualize(data_path)
@@ -87,9 +87,9 @@ def test_artist_cloud():
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
     file_dir = os.path.abspath(__file__ + "/../../")
-    test_path = file_dir + '/test_artist_cloud.svg'
+    test_path = file_dir + '/test_artist_qtcloud.svg'
 
-    vis.artist_cloud(words, n_albums, test_path)
+    vis.artist_quantity_cloud(words, n_albums, test_path)
 
     # now we test if the image is there
     # the oracle assumes that the image is there
@@ -100,10 +100,29 @@ def test_artist_cloud():
     assert oracle_isthere == test_file.is_file()
 
 
-def test_album_cloud(threshold=20, path='./'):
+def test_artist_qlcloud():
     """
-    Test the album word cloud.
+    Test the artist quality cloud function.
     """
+
+    vis = Visualize(data_path)
+    n_albums = 15
+    words = 30
+
+    # we create the image with an absolute path,
+    # if relative it will depend from which directory the test is executed
+    file_dir = os.path.abspath(__file__ + "/../../")
+    test_path = file_dir + '/test_artist_qlcloud.svg'
+
+    vis.artist_quality_cloud(words, n_albums, test_path)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(test_path)
+
+    assert oracle_isthere == test_file.is_file()
 
 
 def test_genre_cloud(threshold=20, path='./'):
