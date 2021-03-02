@@ -350,8 +350,7 @@ class LastFM():
 
         """
         r_dict = {}
-        for field in fields:
-            print(field)   
+        for field in fields:   
             if field == 'release-date':
                 r_dict[field] = self.get_release_date(json['mbid'])
             elif field == 'tags':
