@@ -278,6 +278,20 @@ class LastFM():
 
 
     def get_tags(self, tags):
+        """
+        Retrieve list of tags from nested dictionary of attachted tags to an album.
+
+        Parameters
+        ----------
+
+        tags : nested dictionary of tags.
+
+        Returns
+        ----------
+        list
+            List of tags.
+
+        """
         tag_list = []
         for tag in tags['tag']:
             tag_list.append(tag['name'])
