@@ -4,6 +4,7 @@ import numpy as np
 import os
 import sys
 import urllib.parse
+import xmltodict
 
 class LastFM():
     def __init__(self):
@@ -171,7 +172,7 @@ class LastFM():
         """
         
         # Check that all keyword arguments are valid
-        valid_args = ['artist', 'album', 'mbid', 'autocorrect', 'username', 'lang']
+        valid_args = ['artist', 'album', 'mbid', 'autocorrect', 'username', 'lang', 'fields']
         for key in kwargs.keys():
             if key not in valid_args:
                 raise ValueError('%s is not in the list of valid keyword arguments.' % key)
@@ -195,6 +196,12 @@ class LastFM():
         method = 'album.getinfo'
         try:
             r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['album']
+
+            #TODO: check for valid fields
+            fields = kwargs['fields'] if 'fields' in kwargs.keys() else None
+            if fields is not None:
+                r_dict = self.response_formatter(r_data, fields)
+                return r_dict
         except KeyError:
             r_data = np.nan
         return r_data
@@ -255,3 +262,56 @@ class LastFM():
 
         return r_data
 
+
+    def get_tags(self, tags):
+        tag_list = []
+        for tag in tags['tag']:
+            tag_list.append(tag['name'])
+        return tag_list
+
+    def get_release_date(self, mbid):
+        """
+        Retrieve the releaste date of an album based on a musicbrainz id.
+
+        Parameters
+        ----------
+
+        mbid : musicbrainz id
+
+        Returns
+        ----------
+        str
+            Release date of the album.
+
+        """
+        if mbid is not None:
+            response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
+            while response.status_code == 503:
+                #TODO: Catch the Retry-After variable!
+                retry_after = response.headers['Retry-After']
+                print('Response code 503. Waiting for %d seconds.', (retry_after))
+                time.sleep(retry_after)
+                response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
+
+            if response.status_code == 200:
+                response_dict = xmltodict.parse(response.text)
+                release_date = response_dict['metadata']['release']['release-group']['first-release-date']
+                return release_date
+            
+            else:
+                raise RuntimeError('Musicbrainz API responded with status code', response.status_code)
+
+        else:
+            return None
+
+    def response_formatter(self, json, fields):
+        r_dict = {}
+        for field in fields:
+            print(field)   
+            if field == 'release-date':
+                r_dict[field] = self.get_release_date(json['mbid'])
+            elif field == 'tags':
+                r_dict[field] = self.get_tags(json['tags'])
+            else:
+                r_dict[field] = json[field]
+        return r_dict
