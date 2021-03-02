@@ -359,11 +359,15 @@ class LastFM():
 
         """
         r_dict = {}
-        for field in fields:   
-            if field == 'release-date':
-                r_dict[field] = self.get_release_date(json['mbid'])
-            elif field == 'tags':
-                r_dict[field], r_dict['ignored tags'] = self.get_tags(json['tags'])
+        for field in fields:
+            if field not in self.config['system settings']['lastfm']['accepted fields']:
+                print('\'%s\' not in list of accepted fields! Setting value to None. Check metalhistory/config.yaml for accepted fields.' % (field))
+                r_dict[field] = None
             else:
-                r_dict[field] = json[field]
+                if field == 'release-date':
+                    r_dict[field] = self.get_release_date(json['mbid'])
+                elif field == 'tags':
+                    r_dict[field], r_dict['ignored tags'] = self.get_tags(json['tags'])
+                else:
+                    r_dict[field] = json[field]
         return r_dict
