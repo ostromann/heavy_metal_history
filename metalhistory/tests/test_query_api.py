@@ -111,6 +111,19 @@ def test_get_album_matches_required_args():
         matches = lastFM_obj.get_album_matches(verbose=0)
 
 
+def test_get_album_matches_bad_request():
+    """
+    Test that the get_track_info function raises a RuntimeError if the
+    the response from the LastFM API is not ok
+    """
+    lastFM_obj = LastFM()
+
+    # forcefully set wrong API key
+    lastFM_obj.api_str=''
+    with pytest.raises(RuntimeError):
+        info = lastFM_obj.get_album_matches(album='Paranoid')
+
+
 def test_get_album_info_return_types():
     """
     Test that the get_album_info function returns correct data types.
@@ -167,6 +180,20 @@ def test_get_album_info_autocorrect():
                                          autocorrect=2)
 
 
+def test_get_album_info_bad_request():
+    """
+    Test that the get_track_info function raises a RuntimeError if the
+    the response from the LastFM API is not ok
+    """
+    lastFM_obj = LastFM()
+
+    # forcefully set wrong API key
+    lastFM_obj.api_str=''
+    with pytest.raises(RuntimeError):
+        info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
+
+
+
 def test_get_track_info_return_types():
     """
     Test that the get_track_info function returns correct data types.
@@ -221,3 +248,15 @@ def test_get_track_info_autocorrect():
     with pytest.raises(ValueError):
         info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs',
                                          autocorrect=2)
+
+def test_get_track_info_bad_request():
+    """
+    Test that the get_track_info function raises a RuntimeError if the
+    the response from the LastFM API is not ok
+    """
+    lastFM_obj = LastFM()
+
+    # forcefully set wrong API key
+    lastFM_obj.api_str=''
+    with pytest.raises(RuntimeError):
+        info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
