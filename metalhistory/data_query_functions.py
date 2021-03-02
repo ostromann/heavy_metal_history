@@ -328,7 +328,7 @@ class LastFM():
                 #TODO: Catch the Retry-After variable!
                 retry_after = response.headers['Retry-After']
                 print('Response code 503. Waiting for %d seconds.', (retry_after))
-                time.sleep(retry_after)
+                time.sleep(int(retry_after))
                 response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
 
             if response.status_code == 200:
