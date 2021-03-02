@@ -298,10 +298,13 @@ class LastFM():
 
         """
         tag_list = []
+        ignored_tag_list = []
         for tag in tags['tag']:
             if tag['name'] in self.config['user settings']['accepted tags']:
                 tag_list.append(tag['name'])
-        return tag_list
+            else:
+                ignored_tag_list.append(tag['name'])
+        return tag_list, ignored_tag_list
 
     def get_release_date(self, mbid):
         """
@@ -360,7 +363,7 @@ class LastFM():
             if field == 'release-date':
                 r_dict[field] = self.get_release_date(json['mbid'])
             elif field == 'tags':
-                r_dict[field] = self.get_tags(json['tags'])
+                r_dict[field], r_dict['ignored tags'] = self.get_tags(json['tags'])
             else:
                 r_dict[field] = json[field]
         return r_dict
