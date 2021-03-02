@@ -6,6 +6,7 @@ import sys
 import urllib.parse
 import xmltodict
 import yaml
+import time
 
 class LastFM():
     def __init__(self):
