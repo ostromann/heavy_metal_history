@@ -6,8 +6,9 @@ from metalhistory.visualization_api import Visualize
 
 import os
 import sys
+from pathlib import Path
+
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # get path of the dataset
 root_dir = os.path.abspath(__file__ + "/../../../")
@@ -57,9 +58,21 @@ def test_artist_barplot():
     vis = Visualize(data_path)
     n_albums = 15
     n_artists = 30
-    test_path = './test_artist_barplot.svg'
+
+    # we create the image with an absolute path,
+    # if relative it will depend from which directory the test is executed
+    file_dir = os.path.abspath(__file__ + "/../../")
+    test_path = file_dir + '/test_artist_barplot.svg'
 
     vis.artist_barplot(n_albums, n_artists, test_path)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(test_path)
+
+    assert oracle_isthere == test_file.is_file()
 
 
 def test_artist_cloud():
@@ -70,9 +83,21 @@ def test_artist_cloud():
     vis = Visualize(data_path)
     n_albums = 15
     words = 30
-    test_path = './test_artist_cloud.svg'
+
+    # we create the image with an absolute path,
+    # if relative it will depend from which directory the test is executed
+    file_dir = os.path.abspath(__file__ + "/../../")
+    test_path = file_dir + '/test_artist_cloud.svg'
 
     vis.artist_cloud(words, n_albums, test_path)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(test_path)
+
+    assert oracle_isthere == test_file.is_file()
 
 
 def test_album_cloud(threshold=20, path='./'):
