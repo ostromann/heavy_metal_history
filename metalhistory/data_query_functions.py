@@ -359,6 +359,9 @@ class LastFM():
 
         """
         r_dict = {}
+        if type(fields) == str:
+            fields = [fields]
+
         for field in fields:
             if field not in self.config['system settings']['lastfm']['accepted fields']:
                 print('\'%s\' not in list of accepted fields! Setting value to None. Check metalhistory/config.yaml for accepted fields.' % (field))
