@@ -5,6 +5,7 @@ import os
 import sys
 import urllib.parse
 import xmltodict
+import yaml
 
 class LastFM():
     def __init__(self):
@@ -31,6 +32,10 @@ class LastFM():
         api_key = self.authenticate_from_dotenv('LASTFM_API_KEY')
         self.api_str = '&api_key=' + api_key
         self.base_str = 'http://ws.audioscrobbler.com/2.0/?'
+
+        with open('metalhistory/config.yaml') as file:
+            self.config = yaml.load(file, Loader=yaml.FullLoader)
+
         pass
 
 
