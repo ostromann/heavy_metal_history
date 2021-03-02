@@ -333,6 +333,22 @@ class LastFM():
             return None
 
     def response_formatter(self, json, fields):
+        """
+        Format the large json response to a dictionary of requested fields
+
+        Parameters
+        ----------
+
+        json : LastFM response of a album info.
+
+        fields : list of fields to be returned
+
+        Returns
+        ----------
+        dict
+            Request fields of album info.
+
+        """
         r_dict = {}
         for field in fields:
             print(field)   
