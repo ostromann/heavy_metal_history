@@ -2,16 +2,14 @@ system settings:
   lastfm:
     accepted fields:
       - artist
-      - album
       - mbid
       - url
       - listeners
       - playcount
       - tags
       - image
-      - tracks
       - release-date
-      
+
 
 
 user settings:
