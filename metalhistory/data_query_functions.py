@@ -299,7 +299,8 @@ class LastFM():
         """
         tag_list = []
         for tag in tags['tag']:
-            tag_list.append(tag['name'])
+            if tag['name'] in self.config['user settings']['accepted tags']:
+                tag_list.append(tag['name'])
         return tag_list
 
     def get_release_date(self, mbid):
