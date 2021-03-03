@@ -40,9 +40,10 @@ class Visualize():
         return df
 
 
-    def prune_N(self, n=15):
+    def prune_and_group(self, n=15):
         """
         Return the dataset of the artists with N>=n albums.
+        Group the dataset by artist.
         """
 
         df = self.load_dataframe()
@@ -55,7 +56,7 @@ class Visualize():
         for artist in discarded.index:
             df = df.drop(artist_df.get_group(artist).index)
 
-        return df
+        return df.groupby('artist')
 
 
     def artist_barplot(self, n_albums=15, n_artists=30, path='artist_bar.svg'):
@@ -65,8 +66,7 @@ class Visualize():
         Average, Max and Min values are plotted.
         """
 
-        df = self.prune_N(n_albums)
-        artist_df = df.groupby('artist')
+        artist_df = self.prune_and_group(n_albums)
 
         # manipulate DF to retain useful statistics for the plot
         artist_description = artist_df.describe()
@@ -142,8 +142,7 @@ class Visualize():
         The figure will be saved in the specified path.
         """
 
-        df = self.prune_N(min_albums)
-        artist_df = df.groupby('artist')
+        artist_df = self.prune_and_group(min_albums)
 
         if sorting == 'quantity':
             artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]

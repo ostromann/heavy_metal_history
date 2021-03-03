@@ -34,7 +34,7 @@ def test_load_dataset():
 
 def test_prune():
     """
-    Test the prune_N function
+    Test the prune_and_group function
     """
     vis = Visualize(data_path)
 
@@ -43,8 +43,7 @@ def test_prune():
     oracle_albums = 38
 
     # so we prune the dataset and once it is grouped by N. of albums, we check that Iron Maiden is there
-    df = vis.prune_N(oracle_albums)
-    artist_df = df.groupby('artist')
+    artist_df = vis.prune_and_group(oracle_albums)
     artist_by_count = artist_df.count().sort_values(by='MA_score', ascending=False)
 
     assert oracle_artist == artist_by_count.index[0]
