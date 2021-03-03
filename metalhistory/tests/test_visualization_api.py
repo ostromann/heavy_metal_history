@@ -2,7 +2,7 @@
 Test routines for the data visualization class
 """
 
-from metalhistory.visualization_api import Visualize
+import metalhistory.visualization_api as vis
 
 import os
 import sys
@@ -17,8 +17,6 @@ data_path = root_dir + '/data/MA_10k_albums.csv'
 # get path of the api folder
 file_dir = os.path.abspath(__file__ + "/../../")
 
-# create the api object
-vis = Visualize(data_path)
 
 
 def test_load_dataset():
@@ -26,7 +24,7 @@ def test_load_dataset():
     Test the load function.
     """
 
-    df = vis.load_dataframe()
+    df = vis.load_dataframe(data_path)
 
     # the oracle has knows the first raw of the dataset
     oracle_artist = 'Slayer'
@@ -48,7 +46,7 @@ def test_prune():
     oracle_albums = 38
 
     # so we prune the dataset and once it is grouped by N. of albums, we check that Iron Maiden is there
-    artist_df = vis.prune_and_group(oracle_albums)
+    artist_df = vis.prune_and_group(data_path, oracle_albums)
     artist_by_count = artist_df.count().sort_values(by='MA_score', ascending=False)
 
     assert oracle_artist == artist_by_count.index[0]
@@ -66,7 +64,7 @@ def test_artist_barplot():
     # if relative it will depend from which directory the test is executed
     test_path = file_dir + '/test_artist_barplot.svg'
 
-    vis.artist_barplot(n_albums, n_artists, test_path)
+    vis.artist_barplot(data_path, n_albums, n_artists, test_path)
 
     # now we test if the image is there
     # the oracle assumes that the image is there
@@ -89,7 +87,7 @@ def test_generate_txt():
     oracle_isthere = True
     oracle_string = 'Iron_Maiden'
 
-    artist_df = vis.prune_and_group(oracle_albums)
+    artist_df = vis.prune_and_group(data_path, oracle_albums)
     artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
     test_path = vis.generate_text_from_df(artist_df, file_name='/test_txt.txt')
 
@@ -134,7 +132,7 @@ def test_artist_quantity():
     # if relative it will depend from which directory the test is executed
     test_path = file_dir + '/test_artist_qtcloud.svg'
 
-    vis.artist_cloud('quantity', words, n_albums, test_path)
+    vis.artist_cloud(data_path, 'quantity', words, n_albums, test_path)
 
     # now we test if the image is there
     # the oracle assumes that the image is there
@@ -157,7 +155,7 @@ def test_artist_quality():
     # if relative it will depend from which directory the test is executed
     test_path = file_dir + '/test_artist_qlcloud.svg'
 
-    vis.artist_cloud('quality', words, n_albums, test_path)
+    vis.artist_cloud(data_path, 'quality', words, n_albums, test_path)
 
     # now we test if the image is there
     # the oracle assumes that the image is there
