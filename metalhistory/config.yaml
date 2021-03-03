@@ -2,6 +2,7 @@ system settings:
   lastfm:
     accepted fields:
       - artist
+      - name 
       - mbid
       - url
       - listeners
