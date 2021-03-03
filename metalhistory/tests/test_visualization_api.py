@@ -14,6 +14,10 @@ import pandas as pd
 root_dir = os.path.abspath(__file__ + "/../../../")
 data_path = root_dir + '/data/MA_10k_albums.csv'
 
+# get path of the api folder
+file_dir = os.path.abspath(__file__ + "/../../")
+
+
 
 def test_load_dataset():
     """
@@ -60,7 +64,6 @@ def test_artist_barplot():
 
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
-    file_dir = os.path.abspath(__file__ + "/../../")
     test_path = file_dir + '/test_artist_barplot.svg'
 
     vis.artist_barplot(n_albums, n_artists, test_path)
@@ -108,7 +111,6 @@ def test_generate_wordcloud():
 
     vis = Visualize(data_path)
 
-    file_dir = os.path.abspath(__file__ + "/../../")
     test_path = file_dir + '/test_txt.txt'
 
     figure_path = file_dir + '/test_wordcloud.svg'
@@ -135,7 +137,6 @@ def test_artist_quantity():
 
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
-    file_dir = os.path.abspath(__file__ + "/../../")
     test_path = file_dir + '/test_artist_qtcloud.svg'
 
     vis.artist_cloud('quantity', words, n_albums, test_path)
@@ -160,7 +161,6 @@ def test_artist_quality():
 
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
-    file_dir = os.path.abspath(__file__ + "/../../")
     test_path = file_dir + '/test_artist_qlcloud.svg'
 
     vis.artist_cloud('quality', words, n_albums, test_path)
