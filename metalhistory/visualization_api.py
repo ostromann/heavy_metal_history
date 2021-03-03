@@ -7,9 +7,7 @@ from .data_query_functions import LastFM
 # visualization libraries
 import pandas as pd
 import os
-from PIL import Image
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-
 import matplotlib.pyplot as plt
 
 class Visualize():
@@ -29,6 +27,62 @@ class Visualize():
             print("The specified file could not be loaded.")
 
         self.directory_path = os.path.abspath(__file__ + "/../")
+
+
+    def artist_barplot(self, n_albums=15, n_artists=30, path='artist_bar.svg'):
+        """
+        Visualize a histogram plot with 'n_artists' artist names that have published at least 'n_albums' albums.
+        Artist are scored based on the average of the MA score of each album.
+        Average, Max and Min values are plotted.
+        """
+
+        artist_df = self.prune_and_group(n_albums)
+
+        # manipulate DF to retain useful statistics for the plot
+        artist_description = artist_df.describe()
+        artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
+        artist_sorted = artist_description.sort_values(by=("MA_score", "mean"), ascending=False)
+        # drop upper level in columns names
+        artist_sorted.columns = artist_sorted.columns.droplevel()
+        # keep the requested number of artists
+        # note that n_artists is higher than the size of the dataframe, no exception is raised
+        artist_sorted = artist_sorted.head(n_artists)
+
+        plt.figure(figsize=(300,100))
+        artist_sorted.plot.bar()
+        plt.xticks(rotation=70)
+        plt.title("Statistics on artists with at least " + str(n_albums) + " albums.")
+        plt.xlabel("")
+        plt.ylabel("MA score")
+        plt.tight_layout()
+        plt.savefig(path)
+        plt.close("all")
+
+
+    def artist_cloud(self, sorting='quantity', words_limit=20, min_albums=15, path='/artist_cloud.svg'):
+        """
+        Visualize a world cloud with artist names.
+        The artist names displayed depend on the sorting criteria.
+        The atists are selected such that they published at least 'min_albums' albums.
+        Up to 'words_limit' names are displayed.
+        The figure will be saved in the specified path.
+        """
+
+        artist_df = self.prune_and_group(min_albums)
+
+        if sorting == 'quantity':
+            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+        elif sorting == 'quality':
+            artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
+        else:
+            print("Sorting method not available, continuing with default option.")
+            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+
+        artist_df = artist_df.head(words_limit)
+
+        # create and generate a word cloud image
+        txt_path = self.generate_text_from_df(artist_df)
+        self.generate_word_cloud(words_limit, txt_path, path)
 
 
     def load_dataframe(self):
@@ -57,37 +111,6 @@ class Visualize():
             df = df.drop(artist_df.get_group(artist).index)
 
         return df.groupby('artist')
-
-
-    def artist_barplot(self, n_albums=15, n_artists=30, path='artist_bar.svg'):
-        """
-        Visualize a histogram plot with 'n_artists' artist names that have published at least 'n_albums' albums.
-        Artist are scored based on the average of the MA score of each album.
-        Average, Max and Min values are plotted.
-        """
-
-        artist_df = self.prune_and_group(n_albums)
-
-        # manipulate DF to retain useful statistics for the plot
-        artist_description = artist_df.describe()
-        artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
-        artist_sorted = artist_description.sort_values(by=("MA_score", "mean"), ascending=False)
-        # drop upper level in columns names
-        artist_sorted.columns = artist_sorted.columns.droplevel()
-        # keep the requested number of artists
-        # note that n_artists is higher than the size of the dataframe, no exception is raised
-        artist_sorted = artist_sorted.head(n_artists)
-
-
-        plt.figure(figsize=(300,100))
-        artist_sorted.plot.bar()
-        plt.xticks(rotation=70)
-        plt.title("Statistics on artists with at least " + str(n_albums) + " albums.")
-        plt.xlabel("")
-        plt.ylabel("MA score")
-        plt.tight_layout()
-        plt.savefig(path)
-        plt.close("all")
 
 
     def generate_text_from_df(self, df, file_name='/artist_cloud.txt'):
@@ -131,29 +154,3 @@ class Visualize():
         plt.axis("off")
         plt.savefig(figure_name)
         plt.close("all")
-
-
-    def artist_cloud(self, sorting='quantity', words_limit=20, min_albums=15, path='/artist_cloud.svg'):
-        """
-        Visualize a world cloud with artist names.
-        The artist names displayed depend on the sorting criteria.
-        The atists are selected such that they published at least 'min_albums' albums.
-        Up to 'words_limit' names are displayed.
-        The figure will be saved in the specified path.
-        """
-
-        artist_df = self.prune_and_group(min_albums)
-
-        if sorting == 'quantity':
-            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
-        elif sorting == 'quality':
-            artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
-        else:
-            print("Sorting method not available, continuing with default option.")
-            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
-
-        artist_df = artist_df.head(words_limit)
-
-        # create and generate a word cloud image
-        txt_path = self.generate_text_from_df(artist_df, file_name='/artist_cloud.txt')
-        self.generate_word_cloud(words_limit, txt_path, path)
