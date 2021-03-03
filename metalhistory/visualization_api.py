@@ -74,15 +74,6 @@ def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=15, fil
     generate_word_cloud(words_limit, txt_path, file_name)
 
 
-def load_dataframe(dataset):
-    """
-    Import the csv as dataframe
-    """
-    df = pd.read_csv(dataset)
-
-    return df
-
-
 def prune_and_group(dataset, n=15):
     """
     Return the dataset of the artists with N>=n albums.
@@ -148,14 +139,6 @@ def generate_word_cloud(words=1, txt_file='/artist_cloud.txt', figure_name='/art
     plt.axis("off")
     plt.savefig(figure_name)
     plt.close("all")
-
-
-def genre_cloud(self, threshold=20, path='./'):
-    """
-    Visualize a world cloud with genre names.
-    The genre names correspond to the most influential ones, from 1 to threshold.
-    The figure will be saved in the specified path.
-    """
 
 
 def album_covers(self, width=1280, height=720, image_name='./vis/album_covers.jpg'):

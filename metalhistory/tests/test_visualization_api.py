@@ -19,23 +19,6 @@ file_dir = os.path.abspath(__file__ + "/../../")
 
 
 
-def test_load_dataset():
-    """
-    Test the load function.
-    """
-
-    df = vis.load_dataframe(data_path)
-
-    # the oracle has knows the first raw of the dataset
-    oracle_artist = 'Slayer'
-    oracle_album = 'Reign in Blood'
-    oracle_score = 36.01
-
-    assert oracle_artist == df['artist'][0]
-    assert oracle_album == df['album'][0]
-    assert oracle_score == df['MA_score'][0]
-
-
 def test_prune():
     """
     Test the prune_and_group function
