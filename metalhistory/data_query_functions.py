@@ -326,15 +326,20 @@ class LastFM():
             response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
             while response.status_code == 503:
                 #TODO: Catch the Retry-After variable!
-                retry_after = response.headers['Retry-After']
-                print('Response code 503. Waiting for %d seconds.', (retry_after))
-                time.sleep(int(retry_after))
+                retry_margin = 2
+                retry_after = int(response.headers['Retry-After']) + retry_margin
+                
+                print('Response code 503. Waiting for %d seconds.' % (retry_after))
+                time.sleep(retry_after)
                 response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
 
             if response.status_code == 200:
                 response_dict = xmltodict.parse(response.text)
                 release_date = response_dict['metadata']['release']['release-group']['first-release-date']
                 return release_date
+            
+            if response.status_code == 404:
+                return None
             
             else:
                 raise RuntimeError('Musicbrainz API responded with status code', response.status_code)
