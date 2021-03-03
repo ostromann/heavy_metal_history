@@ -139,7 +139,7 @@ class Visualize():
         return txt_path
 
 
-    def generate_word_cloud(self, words, txt_file, figure_name='/artist_cloud.svg'):
+    def generate_word_cloud(self, words=1, txt_file='/artist_cloud.txt', figure_name='/artist_cloud.svg'):
         """
         Generate the word cloud out of a txt file.
         The parameter 'words' specifies the number of words in the could.
