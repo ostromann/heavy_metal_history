@@ -133,11 +133,10 @@ class Visualize():
         plt.close("all")
 
 
-    def artist_quantity_cloud(self, words_limit=20, min_albums=15, path='/artist_qtcloud.svg'):
-        # TODO: merge this function with the quality cloud by adding a sorting method in the parameters
+    def artist_cloud(self, sorting='quantity', words_limit=20, min_albums=15, path='/artist_cloud.svg'):
         """
         Visualize a world cloud with artist names.
-        The artist names displayed depend on the number of albums published.
+        The artist names displayed depend on the sorting criteria.
         The atists are selected such that they published at least 'min_albums' albums.
         Up to 'words_limit' names are displayed.
         The figure will be saved in the specified path.
@@ -146,32 +145,18 @@ class Visualize():
         df = self.prune_N(min_albums)
         artist_df = df.groupby('artist')
 
-        artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+        if sorting == 'quantity':
+            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+        elif sorting == 'quality':
+            artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
+        else:
+            print("Sorting method not available, continuing with default option.")
+            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+
         artist_df = artist_df.head(words_limit)
 
         # create and generate a word cloud image
-        txt_path = self.generate_text_from_df(artist_df, file_name='/artist_qtcloud.txt')
-        self.generate_word_cloud(words_limit, txt_path, path)
-
-
-    def artist_quality_cloud(self, words_limit=20, min_albums=15, path='/artist_qlcloud.svg'):
-        # TODO: merge this function with the quantity cloud by adding a sorting method in the parameters
-        """
-        Visualize a world cloud with artist names.
-        The artist names displayed depend on the score average of albums published.
-        The atists are selected such that they published at least 'min_albums' albums.
-        Up to 'words_limit' names are displayed.
-        The figure will be saved in the specified path.
-        """
-
-        df = self.prune_N(min_albums)
-        artist_df = df.groupby('artist')
-
-        artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
-        artist_df = artist_df.head(words_limit)
-
-        # create and generate a word cloud image:
-        txt_path = self.generate_text_from_df(artist_df, file_name='/artist_qlcloud.txt')
+        txt_path = self.generate_text_from_df(artist_df, file_name='/artist_cloud.txt')
         self.generate_word_cloud(words_limit, txt_path, path)
 
 

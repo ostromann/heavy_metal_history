@@ -75,7 +75,7 @@ def test_artist_barplot():
     assert oracle_isthere == test_file.is_file()
 
 
-def test_artist_qtcloud():
+def test_artist_quantity():
     """
     Test the artist quantity cloud function.
     """
@@ -89,7 +89,7 @@ def test_artist_qtcloud():
     file_dir = os.path.abspath(__file__ + "/../../")
     test_path = file_dir + '/test_artist_qtcloud.svg'
 
-    vis.artist_quantity_cloud(words, n_albums, test_path)
+    vis.artist_cloud('quantity', words, n_albums, test_path)
 
     # now we test if the image is there
     # the oracle assumes that the image is there
@@ -100,7 +100,7 @@ def test_artist_qtcloud():
     assert oracle_isthere == test_file.is_file()
 
 
-def test_artist_qlcloud():
+def test_artist_quality():
     """
     Test the artist quality cloud function.
     """
@@ -114,7 +114,7 @@ def test_artist_qlcloud():
     file_dir = os.path.abspath(__file__ + "/../../")
     test_path = file_dir + '/test_artist_qlcloud.svg'
 
-    vis.artist_quality_cloud(words, n_albums, test_path)
+    vis.artist_cloud('quality', words, n_albums, test_path)
 
     # now we test if the image is there
     # the oracle assumes that the image is there
