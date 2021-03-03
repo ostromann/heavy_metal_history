@@ -17,13 +17,15 @@ data_path = root_dir + '/data/MA_10k_albums.csv'
 # get path of the api folder
 file_dir = os.path.abspath(__file__ + "/../../")
 
+# create the api object
+vis = Visualize(data_path)
 
 
 def test_load_dataset():
     """
     Test the load function.
     """
-    vis = Visualize(data_path)
+
     df = vis.load_dataframe()
 
     # the oracle has knows the first raw of the dataset
@@ -40,7 +42,6 @@ def test_prune():
     """
     Test the prune_and_group function
     """
-    vis = Visualize(data_path)
 
     # the oracle knows that Iron Maiden has published 38 albums
     oracle_artist = 'Iron Maiden'
@@ -58,7 +59,6 @@ def test_artist_barplot():
     Test the artist bar plot function.
     """
 
-    vis = Visualize(data_path)
     n_albums = 15
     n_artists = 30
 
@@ -81,8 +81,6 @@ def test_generate_txt():
     """
     Test function for the generate txt from df function.
     """
-
-    vis = Visualize(data_path)
     
     # the oracle know that Iron Maiden has published 38 albums
     # so we create a txt file just with Iron Maiden entry which should be 'Iron_Maiden' repeated 38 times.
@@ -109,8 +107,6 @@ def test_generate_wordcloud():
     Test function to generate a world cloud
     """
 
-    vis = Visualize(data_path)
-
     test_path = file_dir + '/test_txt.txt'
 
     figure_path = file_dir + '/test_wordcloud.svg'
@@ -131,7 +127,6 @@ def test_artist_quantity():
     Test the artist quantity cloud function.
     """
 
-    vis = Visualize(data_path)
     n_albums = 15
     words = 30
 
@@ -155,7 +150,6 @@ def test_artist_quality():
     Test the artist quality cloud function.
     """
 
-    vis = Visualize(data_path)
     n_albums = 15
     words = 30
 
