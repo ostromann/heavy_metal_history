@@ -101,6 +101,29 @@ def test_generate_txt():
     assert oracle_string == first_artist
 
 
+def test_generate_wordcloud():
+    """
+    Test function to generate a world cloud
+    """
+
+    vis = Visualize(data_path)
+
+    file_dir = os.path.abspath(__file__ + "/../../")
+    test_path = file_dir + '/test_txt.txt'
+
+    figure_path = file_dir + '/test_wordcloud.svg'
+
+    vis.generate_word_cloud(1, test_path, figure_path)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(figure_path)
+
+    assert oracle_isthere == test_file.is_file()
+
+
 def test_artist_quantity():
     """
     Test the artist quantity cloud function.
