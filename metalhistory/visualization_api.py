@@ -90,6 +90,33 @@ class Visualize():
         plt.close("all")
 
 
+    def generate_text_from_df(self, df, file_name='/artist_cloud.txt'):
+        """
+        Generate a textfile froma dataframe to use in the word cloud.
+        Return the path to the file so it's easy to locate it.
+        """
+        # the dataframe is indexed with the artists names that we need to access
+        index_obj = df.index
+        index_list = []
+
+        file_dir = os.path.abspath(__file__ + "/../")
+        txt_path = file_dir + file_name
+        # cancel the file if it exists
+        out_file = open(txt_path, 'w')
+        out_file.write("")
+        
+        for name in index_obj:
+            # replace space with tabs so that artists names with multiple words are counted as a single entity
+            index_list.append(name.replace(' ', '_'))
+            count = round(df.loc[name])
+            # create a file.txt containing artists names repeated N times where N is the number of published albums
+            out_file = open(txt_path, 'a')
+            for i in range(count):
+                out_file.write(index_list[-1] + " ")
+
+        return txt_path
+
+
     def artist_quantity_cloud(self, words_limit=20, min_albums=15, path='artist_qtcloud.svg'):
         # TODO: merge this function with the quality cloud by adding a sorting method in the parameters
         """
@@ -105,26 +132,9 @@ class Visualize():
 
         artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
         artist_df = artist_df.head(words_limit)
-        # the dataframe is indexed with the artists names that we need to access
-        index_obj = artist_df.index
-        index_list = []
-
-        file_dir = os.path.abspath(__file__ + "/../")
-        txt_path = file_dir + '/artist_qtcloud.txt'
-        # cancel the file if it exists
-        out_file = open(txt_path, 'w')
-        out_file.write("")
-        
-        for name in index_obj:
-            # replace space with tabs so that artists names with multiple words are counted as a single entity
-            index_list.append(name.replace(' ', '_'))
-            count = artist_df.loc[name]
-            # create a file.txt containing artists names repeated N times where N is the number of published albums
-            out_file = open(txt_path, 'a')
-            for i in range(count):
-                out_file.write(index_list[-1] + " ")
 
         # create and generate a word cloud image
+        txt_path = self.generate_text_from_df(artist_df, file_name='/artist_qtcloud.txt')
         out_file = open(txt_path, 'r')
         contents = out_file.read()
         wordcloud = WordCloud(collocations=False, max_words=words_limit).generate(contents)
@@ -151,26 +161,9 @@ class Visualize():
 
         artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
         artist_df = artist_df.head(words_limit)
-        # the dataframe is indexed with the artists names that we need to access
-        index_obj = artist_df.index
-        index_list = []
-
-        file_dir = os.path.abspath(__file__ + "/../")
-        txt_path = file_dir + '/artist_qlcloud.txt'
-        # cancel the file if it exists
-        out_file = open(txt_path, 'w')
-        out_file.write("")
-        
-        for name in index_obj:
-            # replace space with tabs so that artists names with multiple words are counted as a single entity
-            index_list.append(name.replace(' ', '_'))
-            # create a file.txt containing artists names repeated N times where N is the number of published albums
-            count = round(artist_df.loc[name])
-            out_file = open(txt_path, 'a')
-            for i in range(count):
-                out_file.write(index_list[-1] + " ")
 
         # create and generate a word cloud image:
+        txt_path = self.generate_text_from_df(artist_df, file_name='/artist_qlcloud.txt')
         out_file = open(txt_path, 'r')
         contents = out_file.read()
         wordcloud = WordCloud(collocations=False, max_words=words_limit).generate(contents)
