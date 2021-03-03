@@ -28,6 +28,8 @@ class Visualize():
         except FileNotFoundError:
             print("The specified file could not be loaded.")
 
+        self.directory_path = os.path.abspath(__file__ + "/../")
+
 
     def load_dataframe(self):
         """
@@ -97,7 +99,7 @@ class Visualize():
         index_obj = df.index
         index_list = []
 
-        txt_path = os.path.abspath(__file__ + "/../") + file_name
+        txt_path = self.directory_path + file_name
         # cancel the file if it exists
         out_file = open(txt_path, 'w')
         out_file.write("")
