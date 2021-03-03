@@ -5,8 +5,15 @@ Class allowing some nice visualization of heavy metal data
 from .data_query_functions import LastFM
 
 # visualization libraries
+import numpy as np
 import pandas as pd
 import os
+import squarify
+import ast
+import math
+import requests
+from PIL import Image
+
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
@@ -154,3 +161,57 @@ class Visualize():
         plt.axis("off")
         plt.savefig(figure_name)
         plt.close("all")
+
+    def genre_cloud(self, threshold=20, path='./'):
+        """
+        Visualize a world cloud with genre names.
+        The genre names correspond to the most influential ones, from 1 to threshold.
+        The figure will be saved in the specified path.
+        """
+    
+    def album_covers(self, width=1280, height=720, image_name='./vis/album_covers.jpg'):
+        """
+        Visualize a wordcloud but use album covers instead of names.
+        """
+
+        # Load data
+        df = self.load_dataframe()
+        df = df[['artist', 'album', 'playcount', 'images']]
+        df = df.sort_values('playcount', ascending=False)
+
+        # Format image URLs
+        def format_image_str(s):
+            # TODO: get the largest image in case some image sizes are not present
+            s = s.replace('"', "'")
+            s = ast.literal_eval(s)
+            return s[-1]['#text']
+        df['images'] = df.apply(lambda row: format_image_str(row['images']), axis=1)
+
+        # Compute album cover positions using squarify
+        values = list(df['playcount'])
+        values = squarify.normalize_sizes(values, height, width)
+        rects = squarify.squarify(values, 0., 0., height, width)
+
+        # Compute integer values for slicing
+        for rect in rects:
+            rect['x1'] = max(0, math.floor(rect['x']))
+            rect['y1'] = max(0, math.floor(rect['y']))
+            rect['x2'] = min(height, math.ceil(rect['x'] + rect['dx']))
+            rect['y2'] = min(width,  math.ceil(rect['y'] + rect['dy']))
+
+        # Create the image
+        img = np.zeros((height, width, 3), np.uint8)
+        for i, url in enumerate(df['images']):
+            rect = rects[i]
+            im = Image.open(requests.get(url, stream=True).raw)
+            im = im.convert('RGB')
+            im = im.resize((rect['y2']-rect['y1'], rect['x2']-rect['x1']))
+            im = np.asarray(im)
+            img[rect['x1']:rect['x2'], rect['y1']:rect['y2'], :] = im
+
+        # Save the image
+        dir_name = os.path.dirname(image_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        img = Image.fromarray(img)
+        img.save(image_name)

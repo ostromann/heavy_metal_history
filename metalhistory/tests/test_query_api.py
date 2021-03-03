@@ -111,6 +111,19 @@ def test_get_album_matches_required_args():
         matches = lastFM_obj.get_album_matches(verbose=0)
 
 
+def test_get_album_matches_bad_request():
+    """
+    Test that the get_track_info function raises a RuntimeError if the
+    the response from the LastFM API is not ok
+    """
+    lastFM_obj = LastFM()
+
+    # forcefully set wrong API key
+    lastFM_obj.api_str=''
+    with pytest.raises(RuntimeError):
+        info = lastFM_obj.get_album_matches(album='Paranoid')
+
+
 def test_get_album_info_return_types():
     """
     Test that the get_album_info function returns correct data types.
@@ -167,6 +180,50 @@ def test_get_album_info_autocorrect():
                                          autocorrect=2)
 
 
+def test_get_album_info_bad_request():
+    """
+    Test that the get_track_info function raises a RuntimeError if the
+    the response from the LastFM API is not ok
+    """
+    lastFM_obj = LastFM()
+
+    # forcefully set wrong API key
+    lastFM_obj.api_str=''
+    with pytest.raises(RuntimeError):
+        info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
+
+def test_get_album_info_correct_fields():
+    """
+    Test that the get_album_info function returns a dictionary value of correct type
+    if an accepted field is passed in argument.
+    """
+    lastFM_obj = LastFM()
+    fields = lastFM_obj.config['system settings']['lastfm']['accepted fields']
+    print(fields)
+    info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
+                                         fields=fields)
+    assert type(info) is dict
+    for field in fields:
+        assert field in info.keys()
+        assert info[field] != None
+
+
+def test_get_album_info_incorrect_fields():
+    """
+    Test that the get_album_info function returns a dictionary value of type None
+    if an
+    unaccepted field is passed in argument.
+    """
+    lastFM_obj = LastFM()
+    info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
+                                         fields=['wrong_field', 'wrong_field_2'])
+    assert type(info) is dict
+    assert 'wrong_field' in info.keys()
+    assert info['wrong_field'] == None
+    assert 'wrong_field_2' in info.keys()
+    assert info['wrong_field_2'] == None
+
+
 def test_get_track_info_return_types():
     """
     Test that the get_track_info function returns correct data types.
@@ -221,3 +278,15 @@ def test_get_track_info_autocorrect():
     with pytest.raises(ValueError):
         info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs',
                                          autocorrect=2)
+
+def test_get_track_info_bad_request():
+    """
+    Test that the get_track_info function raises a RuntimeError if the
+    the response from the LastFM API is not ok
+    """
+    lastFM_obj = LastFM()
+
+    # forcefully set wrong API key
+    lastFM_obj.api_str=''
+    with pytest.raises(RuntimeError):
+        info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
