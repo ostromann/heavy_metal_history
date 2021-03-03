@@ -28,8 +28,6 @@ class Visualize():
         except FileNotFoundError:
             print("The specified file could not be loaded.")
 
-        # TODO: check which variables could be defined here, e.g. paths
-
 
     def load_dataframe(self):
         """
@@ -99,8 +97,7 @@ class Visualize():
         index_obj = df.index
         index_list = []
 
-        file_dir = os.path.abspath(__file__ + "/../")
-        txt_path = file_dir + file_name
+        txt_path = os.path.abspath(__file__ + "/../") + file_name
         # cancel the file if it exists
         out_file = open(txt_path, 'w')
         out_file.write("")
@@ -117,7 +114,24 @@ class Visualize():
         return txt_path
 
 
-    def artist_quantity_cloud(self, words_limit=20, min_albums=15, path='artist_qtcloud.svg'):
+    def generate_word_cloud(self, words, txt_file, figure_name='/artist_cloud.svg'):
+        """
+        Generate the word cloud out of a txt file.
+        The parameter 'words' specifies the number of words in the could.
+        """
+
+        out_file = open(txt_file, 'r')
+        contents = out_file.read()
+        wordcloud = WordCloud(collocations=False, max_words=words).generate(contents)
+
+        # Display the generated image:
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis("off")
+        plt.savefig(figure_name)
+        plt.close("all")
+
+
+    def artist_quantity_cloud(self, words_limit=20, min_albums=15, path='/artist_qtcloud.svg'):
         # TODO: merge this function with the quality cloud by adding a sorting method in the parameters
         """
         Visualize a world cloud with artist names.
@@ -135,18 +149,10 @@ class Visualize():
 
         # create and generate a word cloud image
         txt_path = self.generate_text_from_df(artist_df, file_name='/artist_qtcloud.txt')
-        out_file = open(txt_path, 'r')
-        contents = out_file.read()
-        wordcloud = WordCloud(collocations=False, max_words=words_limit).generate(contents)
-
-        # Display the generated image:
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
-        plt.savefig(path)
-        plt.close("all")
+        self.generate_word_cloud(words_limit, txt_path, path)
 
 
-    def artist_quality_cloud(self, words_limit=20, min_albums=15, path='artist_qlcloud.svg'):
+    def artist_quality_cloud(self, words_limit=20, min_albums=15, path='/artist_qlcloud.svg'):
         # TODO: merge this function with the quantity cloud by adding a sorting method in the parameters
         """
         Visualize a world cloud with artist names.
@@ -164,15 +170,7 @@ class Visualize():
 
         # create and generate a word cloud image:
         txt_path = self.generate_text_from_df(artist_df, file_name='/artist_qlcloud.txt')
-        out_file = open(txt_path, 'r')
-        contents = out_file.read()
-        wordcloud = WordCloud(collocations=False, max_words=words_limit).generate(contents)
-
-        # Display the generated image:
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
-        plt.savefig(path)
-        plt.close("all")
+        self.generate_word_cloud(words_limit, txt_path, path)
 
 
     def genre_cloud(self, threshold=20, path='./'):
