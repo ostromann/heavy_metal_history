@@ -15,46 +15,54 @@ system settings:
 
 user settings:
   accepted tags:
-    - heavy metal
+    - heavy metal 
     - alternative metal
     - funk metal
     - nu metal
     - rap metal
     - avant-garde metal
+    - avant-garde black metal
+    - avantgarde metal
     - black metal
+    - atmospheric black metal
     - ambient black metal
     - blackened heavy metal
     - blackened screamo
     - blackgaze
     - black'n'Roll
     - depressive suicidal black metal
+    - depressive black metal
+    - dsbm
     - NSBM
     - post-black metal
     - red and anarchist black metal
     - symphonic black metal
     - viking metal
     - war metal
+    - technical black metal
     - christian metal
     - unblack metal
     - crust punk
+    - crust
     - blackened crust
     - death metal
+    - atmospheric death metal
     - blackened death metal
-    - death 'n' roll
+    - death'n'roll
+    - death n roll
     - melodic death metal
     - technical death metal
     - symphonic death metal
     - doom metal
-    - death-doom
-    - drone metal
-    - funeral doom
-    - sludge metal
     - stoner metal
     - extreme metal
     - folk metal
+    - skaldic metal
     - celtic metal
+    - celtic folk metal
     - pirate metal
     - pagan metal
+    - pagan black metal
     - glam metal
     - hair metal
     - pop metal
@@ -88,12 +96,20 @@ user settings:
     - neue Deutsche Härte
     - post-metal
     - power metal
+    - melodic power metal
+    - symphonic power metal
     - progressive metal
+    - progressive black metal
+    - progressive death metal
+    - progressive power metal
+    - progressive thrash metal
+    - progressive doom metal
     - djent
     - space metal
     - speed metal
     - symphonic metal
     - thrash metal
+    - thrash
     - crossover thrash
     - ghroove metal
     - teutonic thrash metal
