@@ -122,9 +122,3 @@ def test_artist_quality():
     test_file = Path(test_path)
 
     assert oracle_isthere == test_file.is_file()
-
-
-def test_genre_cloud(threshold=20, path='./'):
-    """
-    Test the genres word cloud.
-    """

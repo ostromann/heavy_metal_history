@@ -157,11 +157,3 @@ class Visualize():
         # create and generate a word cloud image
         txt_path = self.generate_text_from_df(artist_df, file_name='/artist_cloud.txt')
         self.generate_word_cloud(words_limit, txt_path, path)
-
-
-    def genre_cloud(self, threshold=20, path='./'):
-        """
-        Visualize a world cloud with genre names.
-        The genre names correspond to the most influential ones, from 1 to threshold.
-        The figure will be saved in the specified path.
-        """
