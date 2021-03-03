@@ -4,6 +4,9 @@ import numpy as np
 import os
 import sys
 import urllib.parse
+import xmltodict
+import yaml
+import time
 
 class LastFM():
     def __init__(self):
@@ -30,6 +33,10 @@ class LastFM():
         api_key = self.authenticate_from_dotenv('LASTFM_API_KEY')
         self.api_str = '&api_key=' + api_key
         self.base_str = 'http://ws.audioscrobbler.com/2.0/?'
+
+        with open('metalhistory/config.yaml') as file:
+            self.config = yaml.load(file, Loader=yaml.FullLoader)
+
         pass
 
 
@@ -175,7 +182,7 @@ class LastFM():
         """
         
         # Check that all keyword arguments are valid
-        valid_args = ['artist', 'album', 'mbid', 'autocorrect', 'username', 'lang']
+        valid_args = ['artist', 'album', 'mbid', 'autocorrect', 'username', 'lang', 'fields']
         for key in kwargs.keys():
             if key not in valid_args:
                 raise ValueError('%s is not in the list of valid keyword arguments.' % key)
@@ -203,7 +210,13 @@ class LastFM():
             raise RuntimeError('LastFM API responded with status code %s.' % (response.status_code))
 
         try:
-            r_data = response.json()['album']
+            r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['album']
+
+            #TODO: check for valid fields
+            fields = kwargs['fields'] if 'fields' in kwargs.keys() else None
+            if fields is not None:
+                r_dict = self.response_formatter(r_data, fields)
+                return r_dict
         except KeyError:
             r_data = np.nan
         return r_data
@@ -266,4 +279,99 @@ class LastFM():
             r_data = response.json()['track']
         except KeyError:
             r_data = np.nan
+
         return r_data
+
+
+    def get_tags(self, tags):
+        """
+        Retrieve list of tags from nested dictionary of attachted tags to an album.
+
+        Parameters
+        ----------
+
+        tags : nested dictionary of tags.
+
+        Returns
+        ----------
+        list
+            List of tags.
+
+        """
+        tag_list = []
+        ignored_tag_list = []
+        for tag in tags['tag']:
+            if tag['name'] in self.config['user settings']['accepted tags']:
+                tag_list.append(tag['name'])
+            else:
+                ignored_tag_list.append(tag['name'])
+        return tag_list, ignored_tag_list
+
+    def get_release_date(self, mbid):
+        """
+        Retrieve the releaste date of an album based on a musicbrainz id.
+
+        Parameters
+        ----------
+
+        mbid : musicbrainz id
+
+        Returns
+        ----------
+        str
+            Release date of the album.
+
+        """
+        if mbid is not None:
+            response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
+            while response.status_code == 503:
+                #TODO: Catch the Retry-After variable!
+                retry_after = response.headers['Retry-After']
+                print('Response code 503. Waiting for %d seconds.', (retry_after))
+                time.sleep(int(retry_after))
+                response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
+
+            if response.status_code == 200:
+                response_dict = xmltodict.parse(response.text)
+                release_date = response_dict['metadata']['release']['release-group']['first-release-date']
+                return release_date
+            
+            else:
+                raise RuntimeError('Musicbrainz API responded with status code', response.status_code)
+
+        else:
+            return None
+
+    def response_formatter(self, json, fields):
+        """
+        Format the large json response to a dictionary of requested fields
+
+        Parameters
+        ----------
+
+        json : LastFM response of a album info.
+
+        fields : list of fields to be returned
+
+        Returns
+        ----------
+        dict
+            Request fields of album info.
+
+        """
+        r_dict = {}
+        if type(fields) == str:
+            fields = [fields]
+
+        for field in fields:
+            if field not in self.config['system settings']['lastfm']['accepted fields']:
+                print('\'%s\' not in list of accepted fields! Setting value to None. Check metalhistory/config.yaml for accepted fields.' % (field))
+                r_dict[field] = None
+            else:
+                if field == 'release-date':
+                    r_dict[field] = self.get_release_date(json['mbid'])
+                elif field == 'tags':
+                    r_dict[field], r_dict['ignored tags'] = self.get_tags(json['tags'])
+                else:
+                    r_dict[field] = json[field]
+        return r_dict
