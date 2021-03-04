@@ -7,6 +7,7 @@ import metalhistory.visualization_api as vis
 import os
 import sys
 from pathlib import Path
+from PIL import Image
 
 import pandas as pd
 
@@ -147,3 +148,31 @@ def test_artist_quality():
     test_file = Path(test_path)
 
     assert oracle_isthere == test_file.is_file()
+
+
+def test_album_covers():
+    """
+    Test the album cover word cloud function. Test that the output image has
+    the correct dimensions and that it was written to disc properly.
+    """
+    
+    width = 1280
+    height = 720
+    image_name = './metalhistory/tests/album_covers_test_image.jpg'
+    
+    img = vis.album_covers(num_albums=5, width=width, height=height,
+                           image_name=image_name,
+                           dataset='./data/proc_MA_100_albums.csv')
+    
+    # Check that the returned image has the correct size
+    out_width, out_height = img.size
+    assert width == out_width
+    assert height == out_height
+    
+    # Check that the written image exists and that it has the correct size
+    assert os.path.isfile(image_name)
+    img = Image.open(image_name)
+    out_width, out_height = img.size
+    assert width == out_width
+    assert height == out_height
+    os.remove(image_name)
