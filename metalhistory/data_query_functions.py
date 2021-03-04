@@ -301,10 +301,12 @@ class LastFM():
         tag_list = []
         ignored_tag_list = []
         for tag in tags['tag']:
-            if tag['name'] in self.config['user settings']['accepted tags']:
-                tag_list.append(tag['name'])
+            if type(tag['name'])==str:
+                name = tag['name']
+                if tag['name'].lower() in self.config['user settings']['accepted tags']:
+                    tag_list.append(tag['name'].lower())
             else:
-                ignored_tag_list.append(tag['name'])
+                ignored_tag_list.append(tag['name'].lower())
         return tag_list, ignored_tag_list
 
     def get_release_date(self, mbid):
