@@ -146,6 +146,24 @@ def album_covers(num_albums=None, width=1280, height=720,
                  dataset='./data/proc_MA_100_albums.csv'):
     """
     Visualize a wordcloud but use album covers instead of names.
+
+    Parameters
+    ----------
+
+    num_albums : Number of top albums to use (by playcount)
+
+    width : Width of the output image
+
+    height : Height of the output image
+
+    image_name : Name of the output image (or None to not save)
+
+    dataset : Name of the input csv file
+
+    Returns
+    ----------
+
+    The output image as a PIL Image object
     """
 
     # Load data
