@@ -210,13 +210,15 @@ class LastFM():
             raise RuntimeError('LastFM API responded with status code %s.' % (response.status_code))
 
         try:
-            r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['album']
-
-            #TODO: check for valid fields
-            fields = kwargs['fields'] if 'fields' in kwargs.keys() else None
-            if fields is not None:
-                r_dict = self.response_formatter(r_data, fields)
-                return r_dict
+            try:
+                r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['album']
+                fields = kwargs['fields'] if 'fields' in kwargs.keys() else None
+                if fields is not None:
+                    r_dict = self.response_formatter(r_data, fields)
+                    return r_dict
+            except ValueError:
+                print('JSONDecodeError while querying for', kwargs['artist'], kwargs['album'])
+                r_data = np.nan
         except KeyError:
             r_data = np.nan
         return r_data
@@ -305,8 +307,8 @@ class LastFM():
                 name = tag['name']
                 if tag['name'].lower() in self.config['user settings']['accepted tags']:
                     tag_list.append(tag['name'].lower())
-            else:
-                ignored_tag_list.append(tag['name'].lower())
+                else:
+                    ignored_tag_list.append(tag['name'].lower())
         return tag_list, ignored_tag_list
 
     def get_release_date(self, mbid):
