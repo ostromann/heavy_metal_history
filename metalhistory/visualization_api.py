@@ -141,7 +141,7 @@ def generate_word_cloud(words=1, txt_file='/artist_cloud.txt', figure_name='/art
     plt.close("all")
 
 
-def album_covers(width=1280, height=720,
+def album_covers(num_albums=None, width=1280, height=720,
                  image_name='./vis/album_covers.jpg',
                  dataset='./data/proc_MA_100_albums.csv'):
     """
@@ -152,6 +152,8 @@ def album_covers(width=1280, height=720,
     df = pd.read_csv(dataset)
     df = df[['artist', 'album', 'playcount', 'images']]
     df = df.sort_values('playcount', ascending=False)
+    if num_albums is not None:
+        df = df.head(num_albums)
 
     # Format image URLs
     def format_image_str(s):
@@ -183,9 +185,11 @@ def album_covers(width=1280, height=720,
         im = np.asarray(im)
         img[rect['x1']:rect['x2'], rect['y1']:rect['y2'], :] = im
 
-    # Save the image
-    dir_name = os.path.dirname(image_name)
-    if dir_name != '' and not os.path.exists(dir_name):
-        os.makedirs(dir_name)
+    # Save and return the image
     img = Image.fromarray(img)
-    img.save(image_name)
+    if image_name is not None:
+        dir_name = os.path.dirname(image_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        img.save(image_name)
+    return img
