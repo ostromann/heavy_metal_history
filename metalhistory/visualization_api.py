@@ -141,13 +141,15 @@ def generate_word_cloud(words=1, txt_file='/artist_cloud.txt', figure_name='/art
     plt.close("all")
 
 
-def album_covers(self, width=1280, height=720, image_name='./vis/album_covers.jpg'):
+def album_covers(width=1280, height=720,
+                 image_name='./vis/album_covers.jpg',
+                 dataset='./data/proc_MA_100_albums.csv'):
     """
     Visualize a wordcloud but use album covers instead of names.
     """
 
     # Load data
-    df = self.load_dataframe()
+    df = pd.read_csv(dataset)
     df = df[['artist', 'album', 'playcount', 'images']]
     df = df.sort_values('playcount', ascending=False)
 
