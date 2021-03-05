@@ -16,7 +16,7 @@ import pandas as pd
 DATASET = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
 # get path of the api folder
-IMG_PATH = os.path.abspath(__file__ + "/../../../") + '/images'
+IMG_DIR = os.path.abspath(__file__ + "/../../../") + '/images'
 
 
 
@@ -64,7 +64,7 @@ def test_barplot_MA():
 
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
-    test_image = IMG_PATH + '/test_barplot_MA.jpg'
+    test_image = IMG_DIR + '/test_barplot_MA.jpg'
 
     image, df = vis.artist_barplot(min_albums, n_artists, metric, test_image)
 
@@ -98,7 +98,7 @@ def test_barplot_listeners():
 
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
-    test_image = IMG_PATH + '/test_barplot_listeners.jpg'
+    test_image = IMG_DIR + '/test_barplot_listeners.jpg'
 
     image, df = vis.artist_barplot(min_albums, n_artists, metric, test_image)
 
@@ -132,7 +132,7 @@ def test_barplot_playcount():
 
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
-    test_image = IMG_PATH + '/test_barplot_playcount.jpg'
+    test_image = IMG_DIR + '/test_barplot_playcount.jpg'
 
     image, df = vis.artist_barplot(min_albums, n_artists, metric, test_image)
 
@@ -156,14 +156,17 @@ def test_barplot_playcount():
 
 
 def test_text_generation():
+    """
+    Test the text generation function
+    """
 
     # the oracle creates its own dataset from list
     oracle_values = [2, 1]
     oracle_index = ['IamOracle1', 'IamOracle2']
-    oracle_df = pd.DataFrame(oracle_values, index=oracle_index, columns =['count']) 
+    oracle_df = pd.DataFrame(oracle_values, index=oracle_index, columns=['count']) 
     oracle_isthere = True
 
-    test_file = IMG_PATH + '/test_txt.txt'
+    test_file = IMG_DIR + '/test_txt.txt'
     test_path = vis.generate_text_from_df(oracle_df, test_file)
 
     test_file = Path(test_path)
@@ -178,6 +181,27 @@ def test_text_generation():
     assert words[0] == oracle_index[0]
     assert words[1] == oracle_index[0]
     assert words[2] == oracle_index[1]
+
+
+def test_generate_wordcloud():
+    """
+    Test the word cloud generation function
+    """
+
+    # we use the same text file as the previous function
+    test_path = IMG_DIR + '/test_txt.txt'
+
+    figure_path = IMG_DIR + '/test_wordcloud.svg'
+
+    vis.generate_word_cloud(2, test_path, figure_path)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(figure_path)
+
+    assert oracle_isthere == test_file.is_file()
 
 
 
