@@ -18,37 +18,58 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
 
-def artist_barplot(dataset, min_albums=15, n_artists=30, file_name='/artist_bar.svg'):
+def artist_barplot(min_albums=5,
+                    n_artists=30,
+                    metric='MA_score',
+                    file_name='./vis/artist_bar.svg'):
     """
-    Visualize a histogram plot with 'n_artists' artist names that have published at least 'min_albums' albums.
-    Artist are scored based on the average of the MA score of each album.
-    Average, Max and Min values are plotted.
+    Visualize a histogram plot with artists statistics based on the MA score.
+
+    Parameters
+    ----------
+
+    min_albums: Min number of album published by the considered artists
+
+    n_artists: Max number of the artists considered in the plot
+
+    metric: Metric used to evaluate the entries [listeners, playcount, MA_score]
+
+    file_name: Name of the output file
+
+    Returns:
+    ----------
+
+    Return the image with average, max and min scores.
     """
 
     artist_df = prune_and_group(min_albums)
 
     # manipulate DF to retain useful statistics for the plot
     artist_description = artist_df.describe()
+    # prune the dataset from the not considered metrics
+    all_metrics = ['listeners', 'playcount', 'MA_score']
+    all_metrics.remove(metric)
+    artist_description.drop(all_metrics, axis=1, level=0, inplace=True)
     artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
-    artist_sorted = artist_description.sort_values(by=("MA_score", "mean"), ascending=False)
+    artist_sorted = artist_description.sort_values(by=(metric, "mean"), ascending=False)
     # drop upper level in columns names
     artist_sorted.columns = artist_sorted.columns.droplevel()
     # keep the requested number of artists
     # note that n_artists is higher than the size of the dataframe, no exception is raised
     artist_sorted = artist_sorted.head(n_artists)
 
-    plt.figure(figsize=(300,100))
+    plt.figure(figsize=(900,300))
     artist_sorted.plot.bar()
     plt.xticks(rotation=70)
     plt.title("Statistics on artists with at least " + str(min_albums) + " albums.")
     plt.xlabel("")
-    plt.ylabel("MA score")
+    plt.ylabel("Metric: " + metric)
     plt.tight_layout()
     plt.savefig(file_name)
     plt.close("all")
 
 
-def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=15, file_name='/artist_cloud.svg'):
+def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=5, file_name='/artist_cloud.svg'):
     """
     Visualize a world cloud with artist names.
     The artist names displayed depend on the sorting criteria.
@@ -57,7 +78,7 @@ def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=15, fil
     The figure will be saved in the specified path.
     """
 
-    artist_df = prune_and_group(dataset, min_albums)
+    artist_df = prune_and_group(min_albums)
 
     if sorting == 'quantity':
         artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
@@ -74,18 +95,14 @@ def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=15, fil
     generate_word_cloud(words_limit, txt_path, file_name)
 
 
-def prune_and_group(group_by='artist', sort_by='album', threshold=5):
+def prune_and_group(threshold=5):
     """
     Preprocess the dataset with grouping and pruning.
 
     Parameters
     ----------
 
-    group_by: key with respect to the dataframe is grouped before pruning
-
-    sort_by: key with respect to the dataframe is sorted pruning
-
-    threshold: pruning value, al 'sort_by' entries with value < threshold will be removed
+    threshold: pruning value, all artist entries with album value < threshold will be removed
 
     Returns:
     ----------
@@ -93,23 +110,25 @@ def prune_and_group(group_by='artist', sort_by='album', threshold=5):
     Return the grouped and pruned dataset.
     """
 
-    dataset = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
+    dataset = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
     try:
         df = pd.read_csv(dataset)
     except FileNotFoundError:
         print("The specified file could not be loaded.")
     
-    # Groupby by artist
-    df_grouped = df.groupby(group_by)
+    # consider only relevant index
+    df = df[['MA_artist', 'MA_album', 'listeners', 'playcount', 'MA_score']]
+    # group dataset by artist
+    df_grouped = df.groupby('MA_artist')
     # sort artist by album count
-    df_sorted = df_grouped.count().sort_values(by=sort_by, ascending=False)
+    df_sorted = df_grouped.count().sort_values(by='MA_album', ascending=False)
     # save the dataframe with discarded artists
-    discarded = df_sorted.drop(df_sorted[df_sorted[sort_by] >= threshold].index)
+    discarded = df_sorted.drop(df_sorted[df_sorted['MA_album'] >= threshold].index)
     for artist in discarded.index:
         df = df.drop(df_grouped.get_group(artist).index)
 
-    return df.groupby(group_by)
+    return df.groupby('MA_artist')
 
 
 def generate_text_from_df(df, file_name='/artist_cloud.txt'):
