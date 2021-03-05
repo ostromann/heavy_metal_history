@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
 
-def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./vis/artist_bar.svg'):
+def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
     """
     Visualize a histogram plot with artists statistics based on the MA score.
 
@@ -69,7 +69,7 @@ def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./v
     plt.close("all")
 
 
-def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./vis/artist_cloud.svg'):
+def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./images/artist_cloud.svg'):
     """
     Visualize a world cloud with artist names.
 
@@ -141,7 +141,7 @@ def prune_and_group(threshold=5):
     return df.groupby('MA_artist')
 
 
-def generate_text_from_df(df, file_name='./vis/artist_cloud.txt'):
+def generate_text_from_df(df, file_name='./images/artist_cloud.txt'):
     """
     Generate a textfile froma dataframe to use in the word cloud.
 
@@ -178,7 +178,7 @@ def generate_text_from_df(df, file_name='./vis/artist_cloud.txt'):
     return file_name
 
 
-def generate_word_cloud(words=1, txt_file='./vis/artist_cloud.txt', figure_name='./vis/artist_cloud.svg'):
+def generate_word_cloud(words=1, txt_file='./images/artist_cloud.txt', figure_name='./images/artist_cloud.svg'):
     """
     Generate the word cloud out of a txt file.
 
@@ -209,7 +209,7 @@ def generate_word_cloud(words=1, txt_file='./vis/artist_cloud.txt', figure_name=
 
 
 def album_covers(num_albums=100, width=1280, height=720, dataset=None,
-                 image_name='./vis/album_covers.jpg'):
+                 image_name='./images/album_covers.jpg'):
     """
     Visualize a wordcloud but use album covers instead of names.
 
