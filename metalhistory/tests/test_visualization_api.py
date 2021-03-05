@@ -161,8 +161,7 @@ def test_album_covers():
     image_name = './metalhistory/tests/album_covers_test_image.jpg'
     
     img = vis.album_covers(num_albums=5, width=width, height=height,
-                           image_name=image_name,
-                           dataset='./data/proc_MA_100_albums.csv')
+                           image_name=image_name)
     
     # Check that the returned image has the correct size
     out_width, out_height = img.size

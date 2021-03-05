@@ -18,6 +18,9 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
 
+DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
+
+
 def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./vis/artist_bar.svg'):
     """
     Visualize a histogram plot with artists statistics based on the MA score.
@@ -119,10 +122,8 @@ def prune_and_group(threshold=5):
     Return the grouped and pruned dataset.
     """
 
-    dataset = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
-
     try:
-        df = pd.read_csv(dataset)
+        df = pd.read_csv(DATASET)
     except FileNotFoundError:
         print("The specified file could not be loaded.")
     
@@ -207,9 +208,8 @@ def generate_word_cloud(words=1, txt_file='./vis/artist_cloud.txt', figure_name=
     plt.close("all")
 
 
-def album_covers(num_albums=None, width=1280, height=720,
-                 image_name='./vis/album_covers.jpg',
-                 dataset='./data/proc_MA_100_albums.csv'):
+def album_covers(num_albums=100, width=1280, height=720, dataset=None,
+                 image_name='./vis/album_covers.jpg'):
     """
     Visualize a wordcloud but use album covers instead of names.
 
@@ -222,9 +222,9 @@ def album_covers(num_albums=None, width=1280, height=720,
 
     height : Height of the output image
 
-    image_name : Name of the output image (or None to not save)
-
     dataset : Name of the input csv file
+
+    image_name : Name of the output image (or None to not save)
 
     Returns
     ----------
@@ -233,8 +233,11 @@ def album_covers(num_albums=None, width=1280, height=720,
     """
 
     # Load data
-    df = pd.read_csv(dataset)
-    df = df[['artist', 'album', 'playcount', 'images']]
+    if dataset is not None:
+        df = pd.read_csv(dataset)
+    else:
+        df = pd.read_csv(DATASET)
+    df = df[['artist', 'album', 'playcount', 'image']]
     df = df.sort_values('playcount', ascending=False)
     if num_albums is not None:
         df = df.head(num_albums)
@@ -245,7 +248,7 @@ def album_covers(num_albums=None, width=1280, height=720,
         s = s.replace('"', "'")
         s = ast.literal_eval(s)
         return s[-1]['#text']
-    df['images'] = df.apply(lambda row: format_image_str(row['images']), axis=1)
+    df['image'] = df.apply(lambda row: format_image_str(row['image']), axis=1)
 
     # Compute album cover positions using squarify
     values = list(df['playcount'])
@@ -261,7 +264,7 @@ def album_covers(num_albums=None, width=1280, height=720,
 
     # Create the image
     img = np.zeros((height, width, 3), np.uint8)
-    for i, url in enumerate(df['images']):
+    for i, url in enumerate(df['image']):
         rect = rects[i]
         im = Image.open(requests.get(url, stream=True).raw)
         im = im.convert('RGB')
