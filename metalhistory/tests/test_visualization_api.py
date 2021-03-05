@@ -155,6 +155,32 @@ def test_barplot_playcount():
     assert list(df.keys().get_level_values(1)) == oracle_lv1
 
 
+def test_text_generation():
+
+    # the oracle creates its own dataset from list
+    oracle_values = [2, 1]
+    oracle_index = ['IamOracle1', 'IamOracle2']
+    oracle_df = pd.DataFrame(oracle_values, index=oracle_index, columns =['count']) 
+    oracle_isthere = True
+
+    test_file = IMG_PATH + '/test_txt.txt'
+    test_path = vis.generate_text_from_df(oracle_df, test_file)
+
+    test_file = Path(test_path)
+
+    assert oracle_isthere == test_file.is_file()
+
+
+    with open(test_file) as f:
+        words = [line.split() for line in f][0]
+
+    assert len(words) == oracle_values[0] + oracle_values[1]
+    assert words[0] == oracle_index[0]
+    assert words[1] == oracle_index[0]
+    assert words[2] == oracle_index[1]
+
+
+
 def test_album_covers():
     """
     Test the album cover word cloud function. Test that the output image has
