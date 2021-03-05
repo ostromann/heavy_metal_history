@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
 
-def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.jpg'):
+def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
     """
     Visualize a histogram plot with artists statistics based on the MA score.
 
@@ -95,7 +95,7 @@ def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./i
     Returns:
     ----------
 
-    The dataframe used to produce the image
+    The pandas Series used to produce the image
     """
 
     artist_df = prune_and_group(min_albums)
