@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
 
-def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
+def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.jpg'):
     """
     Visualize a histogram plot with artists statistics based on the MA score.
 
@@ -39,7 +39,7 @@ def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./i
     Returns:
     ----------
 
-    Return the image with average, max and min scores.
+    Return the image with average, max and min scores and the dataset used for the plotting.
     """
 
     artist_df = prune_and_group(min_albums)
@@ -53,20 +53,28 @@ def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./i
     artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
     artist_sorted = artist_description.sort_values(by=(metric, "mean"), ascending=False)
     # drop upper level in columns names
+    output_df = artist_sorted.copy()
     artist_sorted.columns = artist_sorted.columns.droplevel()
     # keep the requested number of artists
     # note that n_artists is higher than the size of the dataframe, no exception is raised
     artist_sorted = artist_sorted.head(n_artists)
 
-    plt.figure(figsize=(900,300))
+    img = plt.figure(figsize=(900,300))
     artist_sorted.plot.bar()
     plt.xticks(rotation=70)
     plt.title("Statistics on artists with at least " + str(min_albums) + " albums.")
     plt.xlabel("")
     plt.ylabel("Metric: " + metric)
     plt.tight_layout()
-    plt.savefig(file_name)
+
+    if file_name is not None:
+        dir_name = os.path.dirname(file_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        plt.savefig(file_name)
     plt.close("all")
+
+    return img, output_df
 
 
 def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./images/artist_cloud.svg'):
@@ -87,7 +95,7 @@ def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./i
     Returns:
     ----------
 
-    The figure will be saved in the specified path.
+    The dataframe used to produce the image
     """
 
     artist_df = prune_and_group(min_albums)
@@ -105,6 +113,8 @@ def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./i
     # create and generate a word cloud image
     txt_path = generate_text_from_df(artist_df)
     generate_word_cloud(words_limit, txt_path, file_name)
+
+    return artist_df
 
 
 def prune_and_group(threshold=5):
@@ -190,11 +200,6 @@ def generate_word_cloud(words=1, txt_file='./images/artist_cloud.txt', figure_na
     txt_file: Path of the file containing the text used to generate the word cloud
 
     figure_name: Name of the output figure
-
-    Returns:
-    ----------
-
-    The image with the specified name.
     """
 
     out_file = open(txt_file, 'r')
@@ -205,6 +210,12 @@ def generate_word_cloud(words=1, txt_file='./images/artist_cloud.txt', figure_na
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
     plt.savefig(figure_name)
+
+    if figure_name is not None:
+        dir_name = os.path.dirname(figure_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        plt.savefig(figure_name)
     plt.close("all")
 
 
