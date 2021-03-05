@@ -18,10 +18,7 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
 
-def artist_barplot(min_albums=5,
-                    n_artists=30,
-                    metric='MA_score',
-                    file_name='./vis/artist_bar.svg'):
+def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./vis/artist_bar.svg'):
     """
     Visualize a histogram plot with artists statistics based on the MA score.
 
@@ -69,24 +66,36 @@ def artist_barplot(min_albums=5,
     plt.close("all")
 
 
-def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=5, file_name='/artist_cloud.svg'):
+def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./vis/artist_cloud.svg'):
     """
     Visualize a world cloud with artist names.
-    The artist names displayed depend on the sorting criteria.
-    The atists are selected such that they published at least 'min_albums' albums.
-    Up to 'words_limit' names are displayed.
+
+    Parameters
+    ----------
+
+    min_albums: Min number of album published by the considered artists
+
+    words_limit: Max number of the artists considered in the word cloud
+
+    metric: Metric used to evaluate the entries [listeners, playcount, MA_score]
+
+    file_name: Name of the output file
+
+    Returns:
+    ----------
+
     The figure will be saved in the specified path.
     """
 
     artist_df = prune_and_group(min_albums)
 
-    if sorting == 'quantity':
-        artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
-    elif sorting == 'quality':
-        artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
-    else:
-        print("Sorting method not available, continuing with default option.")
-        artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+    artist_df = artist_df.mean().sort_values(by=metric, ascending=False)[metric]
+    # elaborate data
+    if metric == 'listeners':
+        artist_df = artist_df.div(1e+05)
+    elif metric == 'playcount':
+        artist_df = artist_df.div(1e+06)
+    artist_df = artist_df.round(2)
 
     artist_df = artist_df.head(words_limit)
 
@@ -131,7 +140,7 @@ def prune_and_group(threshold=5):
     return df.groupby('MA_artist')
 
 
-def generate_text_from_df(df, file_name='/artist_cloud.txt'):
+def generate_text_from_df(df, file_name='./vis/artist_cloud.txt'):
     """
     Generate a textfile froma dataframe to use in the word cloud.
 
@@ -152,25 +161,23 @@ def generate_text_from_df(df, file_name='/artist_cloud.txt'):
     index_obj = df.index
     index_list = []
 
-    directory_path = os.path.abspath(__file__ + "/../")
-    txt_path = directory_path + file_name
-    # cancel the file if it exists
-    out_file = open(txt_path, 'w')
+    # erase the file if it exists
+    out_file = open(file_name, 'w')
     out_file.write("")
-    
+
     for name in index_obj:
         # replace space with tabs so that artists names with multiple words are counted as a single entity
         index_list.append(name.replace(' ', '_'))
         count = round(df.loc[name])
         # create a file.txt containing artists names repeated N times where N is the number of published albums
-        out_file = open(txt_path, 'a')
+        out_file = open(file_name, 'a')
         for i in range(count):
             out_file.write(index_list[-1] + " ")
 
-    return txt_path
+    return file_name
 
 
-def generate_word_cloud(words=1, txt_file='/artist_cloud.txt', figure_name='/artist_cloud.svg'):
+def generate_word_cloud(words=1, txt_file='./vis/artist_cloud.txt', figure_name='./vis/artist_cloud.svg'):
     """
     Generate the word cloud out of a txt file.
 
