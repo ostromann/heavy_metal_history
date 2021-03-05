@@ -12,11 +12,10 @@ from PIL import Image
 import pandas as pd
 
 # get path of the dataset
-root_dir = os.path.abspath(__file__ + "/../../../")
-data_path = root_dir + '/data/MA_10k_albums.csv'
+DATASET = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
 # get path of the api folder
-file_dir = os.path.abspath(__file__ + "/../../")
+IMG_PATH = os.path.abspath(__file__ + "/../../../") + '/images'
 
 
 
@@ -25,15 +24,32 @@ def test_prune():
     Test the prune_and_group function
     """
 
-    # the oracle knows that Iron Maiden has published 38 albums
-    oracle_artist = 'Iron Maiden'
-    oracle_albums = 38
+    # the oracle knows the content of the dataset
+    # Soundgarden has 1 album in the dataset
+    oracle_artist_not_in_df = 'Soundgarden'
+    
+    df = vis.prune_and_group(5)
+    # so we prune the dataset and once it is grouped by N. of albums, we test against the oracle
+    df = df.count().sort_values(by='MA_score', ascending=False)
 
-    # so we prune the dataset and once it is grouped by N. of albums, we check that Iron Maiden is there
-    artist_df = vis.prune_and_group(data_path, oracle_albums)
-    artist_by_count = artist_df.count().sort_values(by='MA_score', ascending=False)
+    assert (oracle_artist_not_in_df in df.index) == False    
 
-    assert oracle_artist == artist_by_count.index[0]
+    # the oracle knows the content of the dataset
+    # Iron Maiden has 16 album in the dataset
+    oracle_artist_in_df = 'Iron Maiden'
+    oracle_albums = 16
+
+    assert (oracle_artist_in_df in df.index) == True
+    assert df.loc[oracle_artist_in_df]['MA_score'] == oracle_albums
+
+    # we check that we have all the keys that we want
+    oracle_keys = ['MA_album', 'listeners', 'playcount', 'MA_score']
+
+    keys_in_df = []
+    for key in df.keys():
+            keys_in_df.append(str(key))
+
+    assert keys_in_df  == oracle_keys
 
 
 def test_artist_barplot():
