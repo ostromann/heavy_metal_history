@@ -179,7 +179,7 @@ def generate_text_from_df(df, file_name='./images/artist_cloud.txt'):
     for name in index_obj:
         # replace space with tabs so that artists names with multiple words are counted as a single entity
         index_list.append(name.replace(' ', '_'))
-        count = round(df.loc[name])
+        count = round(float(df.loc[name]))
         # create a file.txt containing artists names repeated N times where N is the number of published albums
         out_file = open(file_name, 'a')
         for i in range(count):
