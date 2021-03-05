@@ -25,7 +25,7 @@ def artist_barplot(dataset, min_albums=15, n_artists=30, file_name='/artist_bar.
     Average, Max and Min values are plotted.
     """
 
-    artist_df = prune_and_group(dataset, min_albums)
+    artist_df = prune_and_group(min_albums)
 
     # manipulate DF to retain useful statistics for the plot
     artist_description = artist_df.describe()
@@ -74,11 +74,26 @@ def artist_cloud(dataset, sorting='quantity', words_limit=20, min_albums=15, fil
     generate_word_cloud(words_limit, txt_path, file_name)
 
 
-def prune_and_group(dataset, n=15):
+def prune_and_group(group_by='artist', sort_by='album', threshold=5):
     """
-    Return the dataset of the artists with N>=n albums.
-    Group the dataset by artist.
+    Preprocess the dataset with grouping and pruning.
+
+    Parameters
+    ----------
+
+    group_by: key with respect to the dataframe is grouped before pruning
+
+    sort_by: key with respect to the dataframe is sorted pruning
+
+    threshold: pruning value, al 'sort_by' entries with value < threshold will be removed
+
+    Returns:
+    ----------
+
+    Return the grouped and pruned dataset.
     """
+
+    dataset = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
     try:
         df = pd.read_csv(dataset)
@@ -86,22 +101,34 @@ def prune_and_group(dataset, n=15):
         print("The specified file could not be loaded.")
     
     # Groupby by artist
-    artist_df = df.groupby('artist')
+    df_grouped = df.groupby(group_by)
     # sort artist by album count
-    artist_by_count = artist_df.count().sort_values(by='album', ascending=False)
+    df_sorted = df_grouped.count().sort_values(by=sort_by, ascending=False)
     # save the dataframe with discarded artists
-    discarded = artist_by_count.drop(artist_by_count[artist_by_count.album >= n].index)
+    discarded = df_sorted.drop(df_sorted[df_sorted[sort_by] >= threshold].index)
     for artist in discarded.index:
-        df = df.drop(artist_df.get_group(artist).index)
+        df = df.drop(df_grouped.get_group(artist).index)
 
-    return df.groupby('artist')
+    return df.groupby(group_by)
 
 
 def generate_text_from_df(df, file_name='/artist_cloud.txt'):
     """
     Generate a textfile froma dataframe to use in the word cloud.
-    Return the path to the file so it's easy to locate it.
+
+    Parameters
+    ----------
+
+    df: dataframe used to generate the file
+
+    file_name: Name of the output file
+
+    Returns:
+    ----------
+
+    Path to the file so it's easy to locate it.
     """
+
     # the dataframe is indexed with the artists names that we need to access
     index_obj = df.index
     index_list = []
@@ -127,7 +154,20 @@ def generate_text_from_df(df, file_name='/artist_cloud.txt'):
 def generate_word_cloud(words=1, txt_file='/artist_cloud.txt', figure_name='/artist_cloud.svg'):
     """
     Generate the word cloud out of a txt file.
-    The parameter 'words' specifies the number of words in the could.
+
+    Parameters
+    ----------
+
+    words: Number of words in the could
+
+    txt_file: Path of the file containing the text used to generate the word cloud
+
+    figure_name: Name of the output figure
+
+    Returns:
+    ----------
+
+    The image with the specified name.
     """
 
     out_file = open(txt_file, 'r')
