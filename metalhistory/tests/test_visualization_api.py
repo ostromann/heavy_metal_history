@@ -232,6 +232,7 @@ def test_wordcloud_MA():
     assert len(df.keys()) == n_artists
     assert df.name == metric
 
+
 def test_wordcloud_listeners():
     """
     Test the artist cloud function with the listeners metric
@@ -244,6 +245,35 @@ def test_wordcloud_listeners():
     # we create the image with an absolute path,
     # if relative it will depend from which directory the test is executed
     test_image = IMG_DIR + '/test_cloud_listeners.jpg'
+
+    df = vis.artist_cloud(min_albums, n_artists, metric, test_image)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(test_image)
+
+    assert oracle_isthere == test_file.is_file()
+
+    # we required to use MA_score as metric, so we check that the series uses it
+    # moreover the series should contain n_artists elements
+    assert len(df.keys()) == n_artists
+    assert df.name == metric
+
+
+def test_wordcloud_playcount():
+    """
+    Test the artist cloud function with the playcount metric
+    """
+
+    min_albums = 5
+    n_artists = 30
+    metric = 'playcount'
+
+    # we create the image with an absolute path,
+    # if relative it will depend from which directory the test is executed
+    test_image = IMG_DIR + '/test_cloud_playcount.jpg'
 
     df = vis.artist_cloud(min_albums, n_artists, metric, test_image)
 
