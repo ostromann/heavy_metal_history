@@ -121,6 +121,40 @@ def test_barplot_listeners():
     assert list(df.keys().get_level_values(1)) == oracle_lv1
 
 
+def test_barplot_playcount():
+    """
+    Test the artist_barplot function with the playcount metric
+    """
+
+    min_albums = 5
+    n_artists = 30
+    metric = 'playcount'
+
+    # we create the image with an absolute path,
+    # if relative it will depend from which directory the test is executed
+    test_image = IMG_PATH + '/test_barplot_playcount.jpg'
+
+    image, df = vis.artist_barplot(min_albums, n_artists, metric, test_image)
+
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
+    test_file = Path(test_image)
+
+    assert oracle_isthere == test_file.is_file()
+
+    # we required to use MA_score as metric, so we check that the dataframe uses it
+    # moreover the plot should contain the labes: mean, min, max
+    oracle_lv1 = ['mean', 'min', 'max']
+
+    assert str(df.keys().get_level_values(0)[0]) == metric and\
+            str(df.keys().get_level_values(0)[1]) == metric and\
+            str(df.keys().get_level_values(0)[2]) == metric
+
+    assert list(df.keys().get_level_values(1)) == oracle_lv1
+
+
 def test_album_covers():
     """
     Test the album cover word cloud function. Test that the output image has
