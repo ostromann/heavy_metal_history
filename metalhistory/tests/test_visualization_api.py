@@ -11,6 +11,9 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 import pandas as pd
+import networkx as nx
+import pytest
+import collections
 
 # get path of the dataset
 DATASET = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
@@ -316,3 +319,70 @@ def test_album_covers():
     assert width == out_width
     assert height == out_height
     os.remove(image_name)
+
+
+def test_generate_unique_tag_from_list():
+    """
+    Test the generate_unique_tag_from_list function
+    """
+    tag_cooccurence_list = [
+        ['a', 'b'], ['b', 'c'], ['c', 'a', 'd'], ['d', 'b']]
+
+    unique_tags = vis.generate_unique_tag_from_list(tag_cooccurence_list)
+    assert collections.Counter(unique_tags) == collections.Counter(['a', 'b', 'c', 'd'])
+
+
+def test_generate_tag_network():
+    """
+    Test the generate_tag_network function
+    
+    """
+    tag_cooccurence_list = [
+        ['a', 'b'], ['b', 'c'], ['c', 'a', 'd'], ['d', 'b']]
+    unique_tags = vis.generate_unique_tag_from_list(tag_cooccurence_list)
+
+    G = vis.generate_tag_network(tag_cooccurence_list, unique_tags)
+
+    assert G is not None
+    assert G.number_of_nodes() == 4
+    assert G.number_of_edges() == 6
+    assert type(G.get_edge_data('a', 'b')) is dict
+    assert 'weight' in G.get_edge_data('a', 'b').keys()
+    assert G.get_edge_data('a', 'b')['weight'] == 2
+    assert G.nodes['a'] is not None
+    assert G.nodes['a']['weight'] == 3
+
+
+def test_filter_tag_graph():
+    """
+    Test the filter tag_graph function
+    """
+    tag_cooccurence_list = [
+        ['a', 'b'], ['b', 'c'], ['c', 'a', 'd'], ['d', 'b']]
+    unique_tags = ['a', 'b', 'c', 'd']
+    tag_attributes = {
+        'a': 10,
+        'b': 9,
+        'c':1,  # node that should be filtered out
+        'd':8
+    }
+    
+    G = vis.generate_tag_network(tag_cooccurence_list, unique_tags)
+    nx.set_node_attributes(G, tag_attributes, 'attribute')
+    G = vis.filter_tag_graph(G, n_top_tags=3, attribute='attribute')
+
+    assert G is not None
+    assert G.number_of_nodes() == 3
+    assert G.number_of_edges() == 3
+    with pytest.raises(KeyError):
+        G.nodes['c'] # Should be fitlered out
+
+
+def test_tag_graph():
+    test_image = IMG_DIR + '/test_tag_graph.svg'
+    fig = vis.tag_graph(dataset='data/proc_MA_1k_albums_not_cumulative.csv',file_name=test_image)
+    
+    assert fig is not None
+
+    test_file = Path(test_image)
+    assert test_file.is_file() is True
