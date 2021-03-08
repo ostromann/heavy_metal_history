@@ -17,201 +17,277 @@ from PIL import Image
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
-class Visualize():
-    def __init__(self, csv='data.csv'):
-        """
-        Create Visualize object that can be used to visualize the data.
 
-        Parameters
-        ----------
-        Dataset
-
-        """
-
-        try:
-            self.dataset = csv
-        except FileNotFoundError:
-            print("The specified file could not be loaded.")
-
-        self.directory_path = os.path.abspath(__file__ + "/../")
+DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
 
 
-    def artist_barplot(self, n_albums=15, n_artists=30, path='artist_bar.svg'):
-        """
-        Visualize a histogram plot with 'n_artists' artist names that have published at least 'n_albums' albums.
-        Artist are scored based on the average of the MA score of each album.
-        Average, Max and Min values are plotted.
-        """
+def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
+    """
+    Visualize a histogram plot with artists statistics based on the MA score.
 
-        artist_df = self.prune_and_group(n_albums)
+    Parameters
+    ----------
 
-        # manipulate DF to retain useful statistics for the plot
-        artist_description = artist_df.describe()
-        artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
-        artist_sorted = artist_description.sort_values(by=("MA_score", "mean"), ascending=False)
-        # drop upper level in columns names
-        artist_sorted.columns = artist_sorted.columns.droplevel()
-        # keep the requested number of artists
-        # note that n_artists is higher than the size of the dataframe, no exception is raised
-        artist_sorted = artist_sorted.head(n_artists)
+    min_albums: Min number of album published by the considered artists
 
-        plt.figure(figsize=(300,100))
-        artist_sorted.plot.bar()
-        plt.xticks(rotation=70)
-        plt.title("Statistics on artists with at least " + str(n_albums) + " albums.")
-        plt.xlabel("")
-        plt.ylabel("MA score")
-        plt.tight_layout()
-        plt.savefig(path)
-        plt.close("all")
+    n_artists: Max number of the artists considered in the plot
 
+    metric: Metric used to evaluate the entries [listeners, playcount, MA_score]
 
-    def artist_cloud(self, sorting='quantity', words_limit=20, min_albums=15, path='/artist_cloud.svg'):
-        """
-        Visualize a world cloud with artist names.
-        The artist names displayed depend on the sorting criteria.
-        The atists are selected such that they published at least 'min_albums' albums.
-        Up to 'words_limit' names are displayed.
-        The figure will be saved in the specified path.
-        """
+    file_name: Name of the output file
 
-        artist_df = self.prune_and_group(min_albums)
+    Returns:
+    ----------
 
-        if sorting == 'quantity':
-            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
-        elif sorting == 'quality':
-            artist_df = artist_df.mean().sort_values(by='MA_score', ascending=False)["MA_score"]
-        else:
-            print("Sorting method not available, continuing with default option.")
-            artist_df = artist_df.count().sort_values(by='MA_score', ascending=False)["MA_score"]
+    Return the image with average, max and min scores and the dataset used for the plotting.
+    """
 
-        artist_df = artist_df.head(words_limit)
+    artist_df = prune_and_group(min_albums)
 
-        # create and generate a word cloud image
-        txt_path = self.generate_text_from_df(artist_df)
-        self.generate_word_cloud(words_limit, txt_path, path)
+    # manipulate DF to retain useful statistics for the plot
+    artist_description = artist_df.describe()
+    # prune the dataset from the not considered metrics
+    all_metrics = ['listeners', 'playcount', 'MA_score']
+    all_metrics.remove(metric)
+    artist_description.drop(all_metrics, axis=1, level=0, inplace=True)
+    artist_description.drop(['count', 'std', '25%', '50%', '75%'], axis=1, level=1, inplace=True)
+    artist_sorted = artist_description.sort_values(by=(metric, "mean"), ascending=False)
+    # drop upper level in columns names
+    output_df = artist_sorted.copy()
+    artist_sorted.columns = artist_sorted.columns.droplevel()
+    # keep the requested number of artists
+    # note that n_artists is higher than the size of the dataframe, no exception is raised
+    artist_sorted = artist_sorted.head(n_artists)
 
+    img = plt.figure(figsize=(900,300))
+    artist_sorted.plot.bar()
+    plt.xticks(rotation=70)
+    plt.title("Statistics on artists with at least " + str(min_albums) + " albums.")
+    plt.xlabel("")
+    plt.ylabel("Metric: " + metric)
+    plt.tight_layout()
 
-    def load_dataframe(self):
-        """
-        Import the csv as dataframe
-        """
-        df = pd.read_csv(self.dataset)
+    if file_name is not None:
+        dir_name = os.path.dirname(file_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        plt.savefig(file_name)
+    plt.close("all")
 
-        return df
+    return img, output_df
 
 
-    def prune_and_group(self, n=15):
-        """
-        Return the dataset of the artists with N>=n albums.
-        Group the dataset by artist.
-        """
+def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./images/artist_cloud.svg'):
+    """
+    Visualize a world cloud with artist names.
 
-        df = self.load_dataframe()
-        # Groupby by artist
-        artist_df = df.groupby('artist')
-        # sort artist by album count
-        artist_by_count = artist_df.count().sort_values(by='album', ascending=False)
-        # save the dataframe with discarded artists
-        discarded = artist_by_count.drop(artist_by_count[artist_by_count.album >= n].index)
-        for artist in discarded.index:
-            df = df.drop(artist_df.get_group(artist).index)
+    Parameters
+    ----------
 
-        return df.groupby('artist')
+    min_albums: Min number of album published by the considered artists
 
+    words_limit: Max number of the artists considered in the word cloud
 
-    def generate_text_from_df(self, df, file_name='/artist_cloud.txt'):
-        """
-        Generate a textfile froma dataframe to use in the word cloud.
-        Return the path to the file so it's easy to locate it.
-        """
-        # the dataframe is indexed with the artists names that we need to access
-        index_obj = df.index
-        index_list = []
+    metric: Metric used to evaluate the entries [listeners, playcount, MA_score]
 
-        txt_path = self.directory_path + file_name
-        # cancel the file if it exists
-        out_file = open(txt_path, 'w')
-        out_file.write("")
-        
-        for name in index_obj:
-            # replace space with tabs so that artists names with multiple words are counted as a single entity
-            index_list.append(name.replace(' ', '_'))
-            count = round(df.loc[name])
-            # create a file.txt containing artists names repeated N times where N is the number of published albums
-            out_file = open(txt_path, 'a')
-            for i in range(count):
-                out_file.write(index_list[-1] + " ")
+    file_name: Name of the output file
 
-        return txt_path
+    Returns:
+    ----------
+
+    The pandas Series used to produce the image
+    """
+
+    artist_df = prune_and_group(min_albums)
+
+    artist_df = artist_df.mean().sort_values(by=metric, ascending=False)[metric]
+    # elaborate data
+    if metric == 'listeners':
+        artist_df = artist_df.div(1e+05)
+    elif metric == 'playcount':
+        artist_df = artist_df.div(1e+06)
+    artist_df = artist_df.round(2)
+
+    artist_df = artist_df.head(words_limit)
+
+    # create and generate a word cloud image
+    txt_path = generate_text_from_df(artist_df)
+    generate_word_cloud(words_limit, txt_path, file_name)
+
+    return artist_df
 
 
-    def generate_word_cloud(self, words=1, txt_file='/artist_cloud.txt', figure_name='/artist_cloud.svg'):
-        """
-        Generate the word cloud out of a txt file.
-        The parameter 'words' specifies the number of words in the could.
-        """
+def prune_and_group(threshold=5):
+    """
+    Preprocess the dataset with grouping and pruning.
 
-        out_file = open(txt_file, 'r')
-        contents = out_file.read()
-        wordcloud = WordCloud(collocations=False, max_words=words).generate(contents)
+    Parameters
+    ----------
 
-        # Display the generated image:
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
-        plt.savefig(figure_name)
-        plt.close("all")
+    threshold: pruning value, all artist entries with album value < threshold will be removed
 
-    def genre_cloud(self, threshold=20, path='./'):
-        """
-        Visualize a world cloud with genre names.
-        The genre names correspond to the most influential ones, from 1 to threshold.
-        The figure will be saved in the specified path.
-        """
+    Returns:
+    ----------
+
+    Return the grouped and pruned dataset.
+    """
+
+    try:
+        df = pd.read_csv(DATASET)
+    except FileNotFoundError:
+        print("The specified file could not be loaded.")
     
-    def album_covers(self, width=1280, height=720, image_name='./vis/album_covers.jpg'):
-        """
-        Visualize a wordcloud but use album covers instead of names.
-        """
+    # consider only relevant index
+    df = df[['MA_artist', 'MA_album', 'listeners', 'playcount', 'MA_score']]
+    # group dataset by artist
+    df_grouped = df.groupby('MA_artist')
+    # sort artist by album count
+    df_sorted = df_grouped.count().sort_values(by='MA_album', ascending=False)
+    # save the dataframe with discarded artists
+    discarded = df_sorted.drop(df_sorted[df_sorted['MA_album'] >= threshold].index)
+    for artist in discarded.index:
+        df = df.drop(df_grouped.get_group(artist).index)
 
-        # Load data
-        df = self.load_dataframe()
-        df = df[['artist', 'album', 'playcount', 'images']]
-        df = df.sort_values('playcount', ascending=False)
+    return df.groupby('MA_artist')
 
-        # Format image URLs
-        def format_image_str(s):
-            # TODO: get the largest image in case some image sizes are not present
-            s = s.replace('"', "'")
-            s = ast.literal_eval(s)
-            return s[-1]['#text']
-        df['images'] = df.apply(lambda row: format_image_str(row['images']), axis=1)
 
-        # Compute album cover positions using squarify
-        values = list(df['playcount'])
-        values = squarify.normalize_sizes(values, height, width)
-        rects = squarify.squarify(values, 0., 0., height, width)
+def generate_text_from_df(df, file_name='./images/artist_cloud.txt'):
+    """
+    Generate a textfile froma dataframe to use in the word cloud.
 
-        # Compute integer values for slicing
-        for rect in rects:
-            rect['x1'] = max(0, math.floor(rect['x']))
-            rect['y1'] = max(0, math.floor(rect['y']))
-            rect['x2'] = min(height, math.ceil(rect['x'] + rect['dx']))
-            rect['y2'] = min(width,  math.ceil(rect['y'] + rect['dy']))
+    Parameters
+    ----------
 
-        # Create the image
-        img = np.zeros((height, width, 3), np.uint8)
-        for i, url in enumerate(df['images']):
-            rect = rects[i]
-            im = Image.open(requests.get(url, stream=True).raw)
-            im = im.convert('RGB')
-            im = im.resize((rect['y2']-rect['y1'], rect['x2']-rect['x1']))
-            im = np.asarray(im)
-            img[rect['x1']:rect['x2'], rect['y1']:rect['y2'], :] = im
+    df: dataframe used to generate the file
 
-        # Save the image
+    file_name: Name of the output file
+
+    Returns:
+    ----------
+
+    Path to the file so it's easy to locate it.
+    """
+
+    # the dataframe is indexed with the artists names that we need to access
+    index_obj = df.index
+    index_list = []
+
+    # erase the file if it exists
+    out_file = open(file_name, 'w')
+    out_file.write("")
+
+    for name in index_obj:
+        # replace space with tabs so that artists names with multiple words are counted as a single entity
+        index_list.append(name.replace(' ', '_'))
+        count = round(float(df.loc[name]))
+        # create a file.txt containing artists names repeated N times where N is the number of published albums
+        out_file = open(file_name, 'a')
+        for i in range(count):
+            out_file.write(index_list[-1] + " ")
+
+    return file_name
+
+
+def generate_word_cloud(words=1, txt_file='./images/artist_cloud.txt', figure_name='./images/artist_cloud.svg'):
+    """
+    Generate the word cloud out of a txt file.
+
+    Parameters
+    ----------
+
+    words: Number of words in the could
+
+    txt_file: Path of the file containing the text used to generate the word cloud
+
+    figure_name: Name of the output figure
+    """
+
+    out_file = open(txt_file, 'r')
+    contents = out_file.read()
+    wordcloud = WordCloud(collocations=False, max_words=words).generate(contents)
+
+    # Display the generated image:
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.savefig(figure_name)
+
+    if figure_name is not None:
+        dir_name = os.path.dirname(figure_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        plt.savefig(figure_name)
+    plt.close("all")
+
+
+def album_covers(num_albums=100, width=1280, height=720, dataset=None,
+                 image_name='./images/album_covers.jpg'):
+    """
+    Visualize a wordcloud but use album covers instead of names.
+
+    Parameters
+    ----------
+
+    num_albums : Number of top albums to use (by playcount)
+
+    width : Width of the output image
+
+    height : Height of the output image
+
+    dataset : Name of the input csv file
+
+    image_name : Name of the output image (or None to not save)
+
+    Returns
+    ----------
+
+    The output image as a PIL Image object
+    """
+
+    # Load data
+    if dataset is not None:
+        df = pd.read_csv(dataset)
+    else:
+        df = pd.read_csv(DATASET)
+    df = df[['artist', 'album', 'playcount', 'image']]
+    df = df.sort_values('playcount', ascending=False)
+    if num_albums is not None:
+        df = df.head(num_albums)
+
+    # Format image URLs
+    def format_image_str(s):
+        # TODO: get the largest image in case some image sizes are not present
+        s = s.replace('"', "'")
+        s = ast.literal_eval(s)
+        return s[-1]['#text']
+    df['image'] = df.apply(lambda row: format_image_str(row['image']), axis=1)
+
+    # Compute album cover positions using squarify
+    values = list(df['playcount'])
+    values = squarify.normalize_sizes(values, height, width)
+    rects = squarify.squarify(values, 0., 0., height, width)
+
+    # Compute integer values for slicing
+    for rect in rects:
+        rect['x1'] = max(0, math.floor(rect['x']))
+        rect['y1'] = max(0, math.floor(rect['y']))
+        rect['x2'] = min(height, math.ceil(rect['x'] + rect['dx']))
+        rect['y2'] = min(width,  math.ceil(rect['y'] + rect['dy']))
+
+    # Create the image
+    img = np.zeros((height, width, 3), np.uint8)
+    for i, url in enumerate(df['image']):
+        rect = rects[i]
+        im = Image.open(requests.get(url, stream=True).raw)
+        im = im.convert('RGB')
+        im = im.resize((rect['y2']-rect['y1'], rect['x2']-rect['x1']))
+        im = np.asarray(im)
+        img[rect['x1']:rect['x2'], rect['y1']:rect['y2'], :] = im
+
+    # Save and return the image
+    img = Image.fromarray(img)
+    if image_name is not None:
         dir_name = os.path.dirname(image_name)
         if dir_name != '' and not os.path.exists(dir_name):
             os.makedirs(dir_name)
-        img = Image.fromarray(img)
         img.save(image_name)
+    return img
