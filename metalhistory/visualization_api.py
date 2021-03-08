@@ -375,9 +375,9 @@ def generate_tag_network(tag_cooccurrence_list, tags):
     return G
 
 
-def filter_tag_graph(g, n_top_tags):
+def filter_tag_graph(g, n_top_tags, attribute='weight'):
     """
-    Filter graph for the n top tags.
+    Filter graph for the n top tags according to chosen attribute.
 
     Parameters
     ----------
@@ -386,15 +386,17 @@ def filter_tag_graph(g, n_top_tags):
 
     n_top_tags : Number of top tags to filter
 
+    attribute : The node attribute to filter on
+
     Returns
     ----------
 
     Subgraph filtered for top tags
     """
-    n_weights = nx.get_node_attributes(g, 'weight')
-    top_weights_keys = nlargest(n_top_tags, n_weights, key = n_weights.get)    
+    node_dict = nx.get_node_attributes(g, attribute)
+    top_node_keys = nlargest(n_top_tags, node_dict, key = node_dict.get)    
     
-    return g.subgraph(top_weights_keys)
+    return g.subgraph(top_node_keys)
 
 def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):    
     """
