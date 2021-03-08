@@ -25,6 +25,18 @@ This projects aims to demonstrate good software engineering practices (versionin
 ## Install
 Install instructions go here.
 
+# Without a Conda environment
+If you want to install the repository not in a Conda-based environment, simply clone the repository, then run the following commands:
+```bash
+cd <repository-folder>
+pip install -r requirements.txt
+```
+Note to run
+```bash
+python3 -m venv
+```
+if you want to create a virtual environment before installing the required packages.
+
 ## Usage
 Run test routines with:
 ```bash
