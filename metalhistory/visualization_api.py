@@ -13,6 +13,9 @@ import ast
 import math
 import requests
 from PIL import Image
+import networkx as nx
+import itertools
+from heapq import nlargest
 
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
@@ -291,3 +294,170 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
             os.makedirs(dir_name)
         img.save(image_name)
     return img
+
+
+def generate_tag_cooccurrence_list_from_df(df):
+    """
+    Generate a list of cooccurring tags per album from a dataframe.
+
+    Parameters
+    ----------
+
+    df: dataframe used to generate the list
+
+    Returns
+    ----------
+
+    List of cooccurring tags per album.
+    """
+    tags_df = df[['tags']].dropna(axis=0)
+    tags = tags_df['tags'].values
+    tag_cooccurrence_list = []
+    for tag in tags:
+        tag_cooccurrence_list.append(eval(tag))
+    return tag_cooccurrence_list
+
+def generate_unique_tag_from_list(tag_list):
+    """
+    Generate a list of unique tags.
+
+    Parameters
+    ----------
+
+    tag_list : list of tags per album.
+
+    Returns
+    ----------
+
+    List of unique tags.
+    """
+
+    unique_tags = list(set(list(itertools.chain.from_iterable(tag_list))))
+    return unique_tags
+
+def generate_tag_network(tag_cooccurrence_list, tags):
+    """
+    Generate a nextwork from tags and their coocurrences.
+    Each node resembles a tag. Each edge resembles a coocurrence of two tags.
+    Node weight resembles number of occurrences of a tag.
+    Edge weight resembles number of cooccurrences of two tags.
+
+    Parameters
+    ----------
+
+    tag_cooccurrence_list : list of cooccurring tags.
+
+    tags : list of unique tags.
+
+    Returns
+    ----------
+
+    Graph of tags
+    """
+    G = nx.Graph()
+    G.add_nodes_from(tags) #create a node for each tag
+    nx.set_node_attributes(G, 1,'weight')
+
+    for d in tag_cooccurrence_list:
+        # Increase node weight
+        for n in d:
+            G.nodes[n]['weight'] += 1
+
+            # Draw Edges (or increase weight if already present)
+            if len(d) >= 2:
+                for comb in itertools.combinations(d, 2):
+                    u = comb[0]
+                    v = comb[1]
+                    if G.has_edge(u, v):
+                        G[u][v]['weight'] += 1
+                    else:
+                        G.add_edge(u, v, weight=1)
+    return G
+
+
+def filter_tag_graph(g, n_top_tags):
+    """
+    Filter graph for the n top tags.
+
+    Parameters
+    ----------
+
+    g : Input graph of tags
+
+    n_top_tags : Number of top tags to filter
+
+    Returns
+    ----------
+
+    Subgraph filtered for top tags
+    """
+    n_weights = nx.get_node_attributes(g, 'weight')
+    top_weights_keys = nlargest(n_top_tags, n_weights, key = n_weights.get)    
+    
+    return g.subgraph(top_weights_keys)
+
+def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):    
+    """
+    Visualize coocurrences of tags in the dataframe.
+
+    Parameters
+    ----------
+
+    num_albums : Number of top albums to use (by playcount)
+
+    n_tags : Number of tags used in the visualisation
+
+    dataset : Name of the input csv file
+
+    image_name : Name of the output image (or None to not save)
+
+    Returns
+    ----------
+
+    Matplotlib figure of the tag graph.
+    """
+    df = pd.read_csv(dataset)
+
+    tag_cooccurrence_list = generate_tag_cooccurrence_list_from_df(df)
+    unique_tags = generate_unique_tag_from_list(tag_cooccurrence_list)
+    G = generate_tag_network(tag_cooccurrence_list, unique_tags)
+    G = filter_tag_graph(G, n_top_tags=n_tags)
+
+    n_weights = nx.get_node_attributes(G, 'weight')
+    edges,e_weights = zip(*nx.get_edge_attributes(G,'weight').items())    
+
+
+    plt.figure(1,figsize=(12,10)) 
+    ax = plt.axes()
+    img = plt.imread("img/coal_bg_crop.jpg")
+    ax.imshow(img, extent=[-2, 2, -1.5, 2.5])
+    pos = nx.circular_layout(G)
+    pos_outer = {}
+    OFFSET = 1.05  # offset on the y axis
+    for k, v in pos.items():
+        pos_outer[k] = (v[0]*(OFFSET+0.5), v[1]*(OFFSET+0.2))
+
+    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * 10 for v in n_weights.values()], node_color='#333333', edge_color='white', width=[math.log(v, 3) * 1.0 for v in e_weights], with_labels=False)
+    nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * 7 for v in n_weights.values()], node_color='white')
+    nx.draw_networkx_labels(G, pos_outer, font_color='darkgrey', font_weight='bold')
+    nx.draw_networkx_labels(G, pos_outer, font_color='white', font_weight='bold')
+    plt.xlim([-2,2])
+    plt.ylim([-1.5,2])
+
+    ax.text(-1.2,1.5, 'Heavy Metal Genre Relations', size=28, color='white')
+    
+    fig = plt.gcf()
+    if file_name is not None:
+        dir_name = os.path.dirname(file_name)
+        if dir_name != '' and not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        plt.savefig(file_name)
+    plt.close("all")
+
+    return fig
+
+
+
+
+
+
