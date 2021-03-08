@@ -25,7 +25,7 @@ This projects aims to demonstrate good software engineering practices (versionin
 ## Install
 Install instructions go here.
 
-# Without a Conda environment
+### Without a Conda environment
 If you want to install the repository not in a Conda-based environment, simply clone the repository, then run the following commands:
 ```bash
 cd <repository-folder>
