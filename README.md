@@ -7,23 +7,35 @@ In this project we will gather statistics from LastFM and Spotify to analyse and
 This projects aims to demonstrate good software engineering practices (versioning, testing, refactoring).
 
 ## Table of Contents
-- Getting started
+- [Getting started](#getting-started)
   - [Install](#install)
   - [Usage](#usage)
-- Development Notes
-    - [Commit Convention](#commit-convention)
-    - [Branch Convention](#branch-convention)
-    - [Workpackages](#workpackages)
-    - [Data Collection](#data-collection)
-- FAQ
-    - [Do I need an API key?](#Do-I-need-an-API-key?)
-    - [What counts as Heavy Metal?](#What-counts-as-Heavy-Metal?)
+  - [Testing](#testing)
+  - [Folder structure](#folder-structure)
+- [Development Notes](#development-notes)
+  - [Commit Convention](#commit-convention)
+  - [Branch Convention](#branch-convention)
+  - [Workpackages](#workpackages)
+  - [Datasets](#datasets)
+  - [Data Collection](#data-collection)
+- [FAQ](#faq)
+  - [Do I need an API key?](#Do-I-need-an-API-key?)
+  - [What counts as Heavy Metal?](#What-counts-as-Heavy-Metal?)
 
 
 # Getting started
 
 ## Install
-Install instructions go here.
+It is possible to install and run our code both with and without a conda environment. See both options below.
+
+### With a Conda environment
+To use with conda simply run the following commands. An environment will be created with the name `spotify`, so make sure that there does not already exist an environment with that name.
+```bash
+git clone https://github.com/ostromann/heavy_metal_history.git
+cd heavy_metal_history
+conda env create -f environment.yml
+conda activate spotify
+```
 
 ### Without a Conda environment
 If you want to install the repository not in a Conda-based environment, simply clone the repository, then run the following commands:
@@ -38,6 +50,22 @@ python3 -m venv
 if you want to create a virtual environment before installing the required packages.
 
 ## Usage
+The code in this repository can be devided into two groups of functions, namely data retrieval/pre-processing and visualization. We provide two jupyter notebooks to demonstrate the usage of these functions.
+
+To get familiar with the data retrieval/pre-processing, run:
+```bash
+jupyter notebook 0-preprocessing.ipynb
+```
+This uses the functions in `metalhistory/data_query_functions.py` to create a csv file of pre-processed data. We do not recommend running this for a large number of album entries as it takes a long time. We have instead included the pre-processed csv file in the repository.
+
+To see how to do some visualizations, run:
+```bash
+jupyter notebook 1-visualizations.ipynb
+```
+This notebook uses the functions in `metalhistory/visualization_api.py` to visualize the pre-processed data in different ways.
+
+It is also possible to view these notebooks in a browser by navigating to e.g. <a href="https://github.com/ostromann/heavy_metal_history/blob/master/1-visualizations.ipynb">1-visualizations.ipynb</a>.
+
 
 ## Testing
 Run test routines with:
@@ -54,6 +82,16 @@ to test the data query functions, and
 pytest -s metalhistory/tests/test_visualization_api.py
 ```
 to test the visualization functions.
+
+
+## Folder structure
+We use the following folder structure in this project:
+- `heavy_metal_history`, root of repository (includes notebooks)
+  - `data`, raw and pre-processed data
+  - `images`, generated visualizations and other images
+  - `metalhistory`, source code
+    - `tests`
+
 
 # Development Notes
 
