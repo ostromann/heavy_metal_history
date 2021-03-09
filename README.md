@@ -7,17 +7,19 @@ In this project we will gather statistics from LastFM and Spotify to analyse and
 This projects aims to demonstrate good software engineering practices (versioning, testing, refactoring).
 
 ## Table of Contents
-- Getting started
+- [Getting started](#getting-started)
   - [Install](#install)
   - [Usage](#usage)
-- Development Notes
-    - [Commit Convention](#commit-convention)
-    - [Branch Convention](#branch-convention)
-    - [Workpackages](#workpackages)
-    - [Data Collection](#data-collection)
-- FAQ
-    - [Do I need an API key?](#Do-I-need-an-API-key?)
-    - [What counts as Heavy Metal?](#What-counts-as-Heavy-Metal?)
+  - [Testing](#testing)
+- [Development Notes](#development-notes)
+  - [Commit Convention](#commit-convention)
+  - [Branch Convention](#branch-convention)
+  - [Workpackages](#workpackages)
+  - [Datasets](#datasets)
+  - [Data Collection](#data-collection)
+- [FAQ](#faq)
+  - [Do I need an API key?](#Do-I-need-an-API-key?)
+  - [What counts as Heavy Metal?](#What-counts-as-Heavy-Metal?)
 
 
 # Getting started
