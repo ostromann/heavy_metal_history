@@ -316,3 +316,15 @@ def test_get_track_info_bad_request():
     lastFM_obj.api_str=''
     with pytest.raises(RuntimeError):
         info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
+
+
+def test_response_formatter():
+    lastFM_obj = LastFM()
+    fields = lastFM_obj.config['system settings']['lastfm']['accepted fields']
+    info_json = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
+
+    info = lastFM_obj.response_formatter(info_json, fields)
+    assert type(info) is dict
+    for field in fields:
+        assert field in info.keys()
+        assert info[field] != None
