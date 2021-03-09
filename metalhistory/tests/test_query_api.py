@@ -334,6 +334,21 @@ def test_get_tags():
     for tag in tags_list:
         assert tag in oracle_tags
 
+def test_get_release_date():
+    """
+    Test the get_release_date function to greturn the correct tags
+    """
+    lastFM_obj = LastFM()
+
+    album_info = lastFM_obj.get_album_info(artist='Opeth', album='Pale Communion')
+    mbid = album_info['mbid']
+    release_date = lastFM_obj.get_release_date(mbid)
+
+    # the oracle knows the release date of the requested album
+    oracle_date = '2014-06-17'
+
+    assert type(release_date) is str
+    assert release_date == oracle_date
 
 def test_response_formatter():
     """
