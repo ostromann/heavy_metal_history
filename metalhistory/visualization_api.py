@@ -431,7 +431,7 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
 
     plt.figure(1,figsize=(12,10)) 
     ax = plt.axes()
-    img = plt.imread("img/coal_bg_crop.jpg")
+    img = plt.imread("assets/coal_bg_crop.jpg")
     ax.imshow(img, extent=[-2, 2, -1.5, 2.5])
     pos = nx.circular_layout(G)
     pos_outer = {}
