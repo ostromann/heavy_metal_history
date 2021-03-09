@@ -11,6 +11,7 @@ This projects aims to demonstrate good software engineering practices (versionin
   - [Install](#install)
   - [Usage](#usage)
   - [Testing](#testing)
+  - [Folder structure](#folder-structure)
 - [Development Notes](#development-notes)
   - [Commit Convention](#commit-convention)
   - [Branch Convention](#branch-convention)
@@ -81,6 +82,16 @@ to test the data query functions, and
 pytest -s metalhistory/tests/test_visualization_api.py
 ```
 to test the visualization functions.
+
+
+## Folder structure
+We use the following folder structure in this project:
+- `heavy_metal_history`, root of repository (includes notebooks)
+  - `data`, raw and pre-processed data
+  - `images`, generated visualizations and other images
+  - `metalhistory`, source code
+    - `tests`
+
 
 # Development Notes
 
