@@ -38,12 +38,22 @@ python3 -m venv
 if you want to create a virtual environment before installing the required packages.
 
 ## Usage
+
+## Testing
 Run test routines with:
 ```bash
-pytest -s tests/test_query_api.py
+pytest -s
 ```
-from the `metalhistory` directory.
-The `-s` option will output to screen any `print()` statement.
+from the root directory. This command will execute all the test routines contained in the `tests` folder.
+The `-s` option will output to screen any `print()` statement. To run singular test routines, execute:
+```bash
+pytest -s metalhistory/tests/test_query_api.py
+```
+to test the data query functions, and
+```bash
+pytest -s metalhistory/tests/test_visualization_api.py
+```
+to test the visualization functions.
 
 # Development Notes
 
