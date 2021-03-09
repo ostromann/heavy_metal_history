@@ -23,7 +23,16 @@ This projects aims to demonstrate good software engineering practices (versionin
 # Getting started
 
 ## Install
-Install instructions go here.
+It is possible to install and run our code both with and without a conda environment. See both options below.
+
+### With a Conda environment
+To use with conda simply run the following commands. An environment will be created with the name `spotify`, so make sure that there does not already exist an environment with that name.
+```bash
+git clone https://github.com/ostromann/heavy_metal_history.git
+cd heavy_metal_history
+conda env create -f environment.yml
+conda activate spotify
+```
 
 ### Without a Conda environment
 If you want to install the repository not in a Conda-based environment, simply clone the repository, then run the following commands:
@@ -38,6 +47,22 @@ python3 -m venv
 if you want to create a virtual environment before installing the required packages.
 
 ## Usage
+The code in this repository can be devided into two groups of functions, namely data retrieval/pre-processing and visualization. We provide two jupyter notebooks to demonstrate the usage of these functions.
+
+To get familiar with the data retrieval/pre-processing, run:
+```bash
+jupyter notebook 0-preprocessing.ipynb
+```
+This uses the functions in `metalhistory/data_query_functions.py` to create a csv file of pre-processed data. We do not recommend running this for a large number of album entries as it takes a loong time. We have instead included the pre-precessed csv file in the repository.
+
+To see how to do some visualizations, run:
+```bash
+jupyter notebook 1-visualizations.ipynb
+```
+This notebook uses the functions in `metalhistory/visualization_api.py` to visualize the pre-processed data in different ways.
+
+It is also possible to view these notebooks in a browser by navigating to e.g. <a href="https://github.com/ostromann/heavy_metal_history/blob/master/1-visualizations.ipynb">1-visualizations.ipynb</a>.
+
 
 ## Testing
 Run test routines with:
