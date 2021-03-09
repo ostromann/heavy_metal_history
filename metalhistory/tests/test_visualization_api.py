@@ -16,7 +16,7 @@ import pytest
 import collections
 
 # get path of the dataset
-DATASET = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
+DATASET = os.path.abspath(__file__ + "/../../../") + '/data/proc_MA_1k_albums.csv'
 
 # get path of the api folder
 IMG_DIR = os.path.abspath(__file__ + "/../../../") + '/images'
@@ -394,7 +394,7 @@ def test_tag_graph():
     Test the tag_graph function to return the correct image
     """
     test_image = IMG_DIR + '/test_tag_graph.svg'
-    fig = vis.tag_graph(dataset='data/proc_MA_1k_albums_not_cumulative.csv',file_name=test_image)
+    fig = vis.tag_graph(dataset=DATASET, file_name=test_image)
     
     # Check that the returned value is not None
     assert fig is not None
