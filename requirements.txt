@@ -11,3 +11,4 @@ Pillow==8.1.2
 python-dotenv==0.15.0
 PyYAML==5.4.1
 jupyter
+tqdm
