@@ -328,14 +328,17 @@ def test_generate_unique_tag_from_list():
     tag_cooccurence_list = [
         ['a', 'b'], ['b', 'c'], ['c', 'a', 'd'], ['d', 'b']]
 
+    # Expected output from the given tag cooccurrence list
+    oracle_unique_tags = ['a', 'b', 'c', 'd'] 
     unique_tags = vis.generate_unique_tag_from_list(tag_cooccurence_list)
-    assert collections.Counter(unique_tags) == collections.Counter(['a', 'b', 'c', 'd'])
+
+    # Check that the list of unique tags is identical (after sorting) to the expected list
+    assert collections.Counter(unique_tags) == collections.Counter(oracle_unique_tags)
 
 
 def test_generate_tag_network():
     """
     Test the generate_tag_network function
-    
     """
     tag_cooccurence_list = [
         ['a', 'b'], ['b', 'c'], ['c', 'a', 'd'], ['d', 'b']]
@@ -343,12 +346,16 @@ def test_generate_tag_network():
 
     G = vis.generate_tag_network(tag_cooccurence_list, unique_tags)
 
+    # Check that returned value is not None
     assert G is not None
+    # Check that the network statistics are correct
     assert G.number_of_nodes() == 4
     assert G.number_of_edges() == 6
+    # Check that the edge data is a dict, that 'weight' is a valid key and has correct value
     assert type(G.get_edge_data('a', 'b')) is dict
     assert 'weight' in G.get_edge_data('a', 'b').keys()
     assert G.get_edge_data('a', 'b')['weight'] == 2
+    # Check that a sample node is present and has right attribute value
     assert G.nodes['a'] is not None
     assert G.nodes['a']['weight'] == 3
 
@@ -371,9 +378,13 @@ def test_filter_tag_graph():
     nx.set_node_attributes(G, tag_attributes, 'attribute')
     G = vis.filter_tag_graph(G, n_top_tags=3, attribute='attribute')
 
+    # Check that returned value is not None
     assert G is not None
+    # Check that the returned graph filtered out the right number of
+    # nodes and edges
     assert G.number_of_nodes() == 3
     assert G.number_of_edges() == 3
+    # Check that the right node got filtered out
     with pytest.raises(KeyError):
         G.nodes['c'] # Should be fitlered out
 
@@ -385,7 +396,13 @@ def test_tag_graph():
     test_image = IMG_DIR + '/test_tag_graph.svg'
     fig = vis.tag_graph(dataset='data/proc_MA_1k_albums_not_cumulative.csv',file_name=test_image)
     
+    # Check that the returned value is not None
     assert fig is not None
 
+    # now we test if the image is there
+    # the oracle assumes that the image is there
+    oracle_isthere = True
+
     test_file = Path(test_image)
-    assert test_file.is_file() is True
+
+    assert oracle_isthere == test_file.is_file()
