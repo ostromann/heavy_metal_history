@@ -122,6 +122,12 @@ Currently we have two lists of input data:
 [./data/MA_10k_albums.csv](./data/MA_10k_albums.csv) which contains the a list of 10,000 albums and their respective artists that received the highest Metascores on <a href="https://www.metal-archives.com/">Encyclopedia Metallum: The Metal Archives</a>.
 
 
+
+Additionally, we have one preprocessed dataset that is ready for data analysis and visualizations: 
+
+[./data/proc_MA_1k_albums.csv](./data/proc_MA_1k_albums.csv) contains the first 1,000 albums of [./data/MA_10k_albums.csv](./data/MA_10k_albums.csv) with added information like listeners, playcounts, tags, urls, images etc.
+
+
 ## Data Collection
 
 The data will be collected using <a href="https://developer.spotify.com/documentation/web-api/">Spotify's Web API</a> and  <a href="https://www.last.fm/api">LastFM's Web API</a>.
