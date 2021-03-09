@@ -53,7 +53,7 @@ To get familiar with the data retrieval/pre-processing, run:
 ```bash
 jupyter notebook 0-preprocessing.ipynb
 ```
-This uses the functions in `metalhistory/data_query_functions.py` to create a csv file of pre-processed data. We do not recommend running this for a large number of album entries as it takes a loong time. We have instead included the pre-precessed csv file in the repository.
+This uses the functions in `metalhistory/data_query_functions.py` to create a csv file of pre-processed data. We do not recommend running this for a large number of album entries as it takes a long time. We have instead included the pre-processed csv file in the repository.
 
 To see how to do some visualizations, run:
 ```bash
