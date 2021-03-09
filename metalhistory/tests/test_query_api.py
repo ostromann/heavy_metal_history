@@ -327,6 +327,7 @@ def test_get_tags():
     album_info = lastFM_obj.get_album_info(artist='Kamelot', album='The Black Halo')
     tags_list, _ = lastFM_obj.get_tags(album_info['tags'])
 
+    # the oracle knows the genre tags corresponding to the requested album
     oracle_tags = ['power metal', 'progressive metal', 'symphonic metal', 'melodic power metal']
 
     assert type(tags_list) is list
@@ -335,6 +336,9 @@ def test_get_tags():
 
 
 def test_response_formatter():
+    """
+    Tes the response_formatter function to return the correct requested fields
+    """
     lastFM_obj = LastFM()
     fields = lastFM_obj.config['system settings']['lastfm']['accepted fields']
     info_json = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
