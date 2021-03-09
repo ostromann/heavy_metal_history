@@ -1,0 +1,122 @@
+system settings:
+  lastfm:
+    accepted fields:
+      - artist
+      - name 
+      - mbid
+      - url
+      - listeners
+      - playcount
+      - tags
+      - image
+      - release-date
+
+
+
+user settings:
+  accepted tags:
+    - heavy metal 
+    - alternative metal
+    - funk metal
+    - nu metal
+    - rap metal
+    - avant-garde metal
+    - avant-garde black metal
+    - avantgarde metal
+    - black metal
+    - atmospheric black metal
+    - ambient black metal
+    - blackened heavy metal
+    - blackened screamo
+    - blackgaze
+    - black'n'Roll
+    - depressive suicidal black metal
+    - depressive black metal
+    - dsbm
+    - NSBM
+    - post-black metal
+    - red and anarchist black metal
+    - symphonic black metal
+    - viking metal
+    - war metal
+    - technical black metal
+    - christian metal
+    - unblack metal
+    - crust punk
+    - crust
+    - blackened crust
+    - death metal
+    - atmospheric death metal
+    - blackened death metal
+    - death'n'roll
+    - death n roll
+    - melodic death metal
+    - technical death metal
+    - symphonic death metal
+    - doom metal
+    - stoner metal
+    - extreme metal
+    - folk metal
+    - skaldic metal
+    - celtic metal
+    - celtic folk metal
+    - pirate metal
+    - pagan metal
+    - pagan black metal
+    - glam metal
+    - hair metal
+    - pop metal
+    - gothic metal
+    - grindcore
+    - deathgrind
+    - goregrind
+    - Pornogrind
+    - electrogrind
+    - grunge
+    - Industrial metal
+    - Industrial death metal
+    - Industrial black metal
+    - kawaii metal
+    - latin metal
+    - metalcore
+    - melodic metal
+    - deathcore
+    - mathcore
+    - electronicore
+    - synthcore
+    - trancecore
+    - nu metalcore
+    - nu metal revival
+    - new nu metal
+    - progressive metalcore
+    - technical metalcore
+    - ambient metalcore
+    - neoclassical metal
+    - shred metal
+    - neue Deutsche Härte
+    - post-metal
+    - power metal
+    - melodic power metal
+    - symphonic power metal
+    - progressive metal
+    - progressive black metal
+    - progressive death metal
+    - progressive power metal
+    - progressive thrash metal
+    - progressive doom metal
+    - djent
+    - space metal
+    - speed metal
+    - symphonic metal
+    - thrash metal
+    - thrash
+    - crossover thrash
+    - ghroove metal
+    - teutonic thrash metal
+    - traditional heavy metal
+    - New wave of British heavy metal
+    - NWOBHM
+    - New wave of American heavy metal
+    - NWOAHM
+    - New wave of traditional heavy metal
+    - NWOTHM
