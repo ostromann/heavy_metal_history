@@ -4,8 +4,11 @@ pandas==1.1.5
 wordcloud==1.8.1
 pytest==3.3.2
 squarify==0.4.3
+networkx==2.5
 numpy==1.19.2
 requests==2.18.4
 Pillow==8.1.2
 python-dotenv==0.15.0
 PyYAML==5.4.1
+jupyter
+tqdm

@@ -34,7 +34,7 @@ To use with conda simply run the following commands. An environment will be crea
 git clone https://github.com/ostromann/heavy_metal_history.git
 cd heavy_metal_history
 conda env create -f environment.yml
-conda activate spotify
+conda activate metalhistory
 ```
 
 ### Without a Conda environment
