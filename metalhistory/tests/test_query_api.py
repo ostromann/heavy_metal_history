@@ -318,6 +318,22 @@ def test_get_track_info_bad_request():
         info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
 
 
+def test_get_tags():
+    """
+    Test the get_tag function to greturn the correct tags
+    """
+    lastFM_obj = LastFM()
+
+    album_info = lastFM_obj.get_album_info(artist='Kamelot', album='The Black Halo')
+    tags_list, _ = lastFM_obj.get_tags(album_info['tags'])
+
+    oracle_tags = ['power metal', 'progressive metal', 'symphonic metal', 'melodic power metal']
+
+    assert type(tags_list) is list
+    for tag in tags_list:
+        assert tag in oracle_tags
+
+
 def test_response_formatter():
     lastFM_obj = LastFM()
     fields = lastFM_obj.config['system settings']['lastfm']['accepted fields']
