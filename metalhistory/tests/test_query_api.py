@@ -228,7 +228,10 @@ def test_get_album_info_correct_fields():
     print(fields)
     info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
                                          fields=fields)
+    # Check info is of type dict
     assert type(info) is dict
+    # Check that all fields are present in returned dict
+    # Check that the values are not None
     for field in fields:
         assert field in info.keys()
         assert info[field] != None
@@ -237,13 +240,14 @@ def test_get_album_info_correct_fields():
 def test_get_album_info_incorrect_fields():
     """
     Test that the get_album_info function returns a dictionary value of type None
-    if an
-    unaccepted field is passed in argument.
+    if an unaccepted field is passed in argument.
     """
     lastFM_obj = LastFM()
     info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
                                          fields=['wrong_field', 'wrong_field_2'])
+    # Check info is of type dict
     assert type(info) is dict
+    # Checl that wrong fields get created but have None values
     assert 'wrong_field' in info.keys()
     assert info['wrong_field'] == None
     assert 'wrong_field_2' in info.keys()
@@ -314,6 +318,7 @@ def test_get_track_info_bad_request():
 
     # forcefully set wrong API key
     lastFM_obj.api_str=''
+    # Check that method raises a RuntimeError when LastFM API throws an error
     with pytest.raises(RuntimeError):
         info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
 
@@ -362,7 +367,9 @@ def test_response_formatter():
     info_json = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
 
     info = lastFM_obj.response_formatter(info_json, fields)
+    # Check that returned value is of type dict
     assert type(info) is dict
+    # Check that all fields are present in the dict and their values are not None
     for field in fields:
         assert field in info.keys()
         assert info[field] != None
