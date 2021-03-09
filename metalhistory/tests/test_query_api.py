@@ -325,14 +325,17 @@ def test_get_tags():
     lastFM_obj = LastFM()
 
     album_info = lastFM_obj.get_album_info(artist='Kamelot', album='The Black Halo')
-    tags_list, _ = lastFM_obj.get_tags(album_info['tags'])
+    tags_list, ignored_tags = lastFM_obj.get_tags(album_info['tags'])
 
     # the oracle knows the genre tags corresponding to the requested album
     oracle_tags = ['power metal', 'progressive metal', 'symphonic metal', 'melodic power metal']
 
     assert type(tags_list) is list
+    assert type(ignored_tags) is list
     for tag in tags_list:
         assert tag in oracle_tags
+    for tag in ignored_tags:
+        assert tag not in oracle_tags
 
 def test_get_release_date():
     """
