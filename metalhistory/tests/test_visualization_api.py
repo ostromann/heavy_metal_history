@@ -379,6 +379,9 @@ def test_filter_tag_graph():
 
 
 def test_tag_graph():
+    """
+    Test the tag_graph function to return the correct image
+    """
     test_image = IMG_DIR + '/test_tag_graph.svg'
     fig = vis.tag_graph(dataset='data/proc_MA_1k_albums_not_cumulative.csv',file_name=test_image)
     

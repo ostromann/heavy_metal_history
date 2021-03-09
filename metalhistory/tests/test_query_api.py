@@ -10,6 +10,32 @@ from metalhistory.data_query_functions import LastFM
 BASE_STR = 'http://ws.audioscrobbler.com/2.0/?'
 
 
+def test_lastfm_init():
+    """
+    Test the initialisation method of the LastFM class.
+    """
+    lastFM_obj  = LastFM()
+    assert lastFM_obj is not None
+
+    # Assert all atributes are there and of correct type
+    assert lastFM_obj.api_str is not None
+    assert type(lastFM_obj.api_str) is str
+    assert lastFM_obj.base_str is not None
+    assert type(lastFM_obj.base_str) is str
+    assert lastFM_obj.config is not None
+    assert type(lastFM_obj.config) is dict
+    
+    # Assert all functions are there
+    assert lastFM_obj.authenticate_from_dotenv is not None
+    assert lastFM_obj.build_request is not None
+    assert lastFM_obj.clean_string is not None
+    assert lastFM_obj.get_album_info is not None
+    assert lastFM_obj.get_track_info is not None
+    assert lastFM_obj.get_tags is not None
+    assert lastFM_obj.get_release_date is not None
+    assert lastFM_obj.response_formatter is not None 
+
+
 def get_api_key():
     """
     Retrieve the API key without using the LastFM class.
@@ -290,3 +316,53 @@ def test_get_track_info_bad_request():
     lastFM_obj.api_str=''
     with pytest.raises(RuntimeError):
         info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
+
+
+def test_get_tags():
+    """
+    Test the get_tag function to greturn the correct tags
+    """
+    lastFM_obj = LastFM()
+
+    album_info = lastFM_obj.get_album_info(artist='Kamelot', album='The Black Halo')
+    tags_list, ignored_tags = lastFM_obj.get_tags(album_info['tags'])
+
+    # the oracle knows the genre tags corresponding to the requested album
+    oracle_tags = ['power metal', 'progressive metal', 'symphonic metal', 'melodic power metal']
+
+    assert type(tags_list) is list
+    assert type(ignored_tags) is list
+    for tag in tags_list:
+        assert tag in oracle_tags
+    for tag in ignored_tags:
+        assert tag not in oracle_tags
+
+def test_get_release_date():
+    """
+    Test the get_release_date function to greturn the correct tags
+    """
+    lastFM_obj = LastFM()
+
+    album_info = lastFM_obj.get_album_info(artist='Opeth', album='Pale Communion')
+    mbid = album_info['mbid']
+    release_date = lastFM_obj.get_release_date(mbid)
+
+    # the oracle knows the release date of the requested album
+    oracle_date = '2014-06-17'
+
+    assert type(release_date) is str
+    assert release_date == oracle_date
+
+def test_response_formatter():
+    """
+    Tes the response_formatter function to return the correct requested fields
+    """
+    lastFM_obj = LastFM()
+    fields = lastFM_obj.config['system settings']['lastfm']['accepted fields']
+    info_json = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
+
+    info = lastFM_obj.response_formatter(info_json, fields)
+    assert type(info) is dict
+    for field in fields:
+        assert field in info.keys()
+        assert info[field] != None
