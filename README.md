@@ -40,12 +40,12 @@ conda activate metalhistory
 ### Without a Conda environment
 If you want to install the repository not in a Conda-based environment, simply clone the repository, then run the following commands:
 ```bash
-cd <repository-folder>
-pip install -r requirements.txt
+cd heavy_metal_history
+pip3 install -r requirements.txt
 ```
 Note to run
 ```bash
-python3 -m venv
+python3 -m venv /path/to/new/virtual/environment
 ```
 if you want to create a virtual environment before installing the required packages.
 

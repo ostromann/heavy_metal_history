@@ -21,7 +21,7 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 
 
-DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums_not_cumulative.csv'
+DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums.csv'
 
 
 def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
