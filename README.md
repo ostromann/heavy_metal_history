@@ -41,7 +41,7 @@ conda activate metalhistory
 If you want to install the repository not in a Conda-based environment, simply clone the repository, then run the following commands:
 ```bash
 cd heavy_metal_history
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 Note to run
 ```bash
