@@ -448,33 +448,36 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
 
     EDGE_WIDTH= 1.0
     EDGE_WIDTH_LOG_BASE = 3 # Base 10 was too extreme, base 2 too small
+    EDGE_COLOR = 'white'
 
     LABEL_FONT_COLOR = 'white'
     LABEL_FONT_WEIGHT = 'bold'
 
+    TITLE_TEXT = 'Heavy Metal Genre Relations'
     TITLE_X_POS = -1.2
     TITLE_Y_POS = 1.5
     TITLE_FONT_SIZE = 28
     TITLE_FONT_COLOR = 'white'
 
+    BACKGROUND_IMAGE_FILE = "assets/coal_bg_crop.jpg"
+
     # Create figure
     plt.figure(1,figsize=FIG_SIZE) 
     ax = plt.axes()
-    img = plt.imread("assets/coal_bg_crop.jpg")
+    img = plt.imread(BACKGROUND_IMAGE_FILE)
     ax.imshow(img, extent=IMG_EXTENT)
     pos = nx.circular_layout(G)
     pos_outer = {}
     for k, v in pos.items():
         pos_outer[k] = (v[0]*(X_OFFSET), v[1]*(Y_OFFSET))
 
-    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * SHADOW_NODE_SIZE for v in n_weights.values()], node_color=SHADOW_NODE_COLOR, edge_color='white', width=[math.log(v, EDGE_WIDTH_LOG_BASE) * EDGE_WIDTH for v in e_weights], with_labels=False)
-    
+    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * SHADOW_NODE_SIZE for v in n_weights.values()], node_color=SHADOW_NODE_COLOR, edge_color=EDGE_COLOR, width=[math.log(v, EDGE_WIDTH_LOG_BASE) * EDGE_WIDTH for v in e_weights], with_labels=False)
     nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * NODE_SIZE for v in n_weights.values()], node_color=NODE_COLOR)
     nx.draw_networkx_labels(G, pos_outer, font_color=LABEL_FONT_COLOR, font_weight=LABEL_FONT_WEIGHT)
     plt.xlim(X_LIMIT)
     plt.ylim(Y_LIMIT)
 
-    ax.text(TITLE_X_POS, TITLE_Y_POS, 'Heavy Metal Genre Relations', size=TITLE_FONT_SIZE, color=TITLE_FONT_COLOR)
+    ax.text(TITLE_X_POS, TITLE_Y_POS, TITLE_TEXT, size=TITLE_FONT_SIZE, color=TITLE_FONT_COLOR)
     
     fig = plt.gcf()
     if file_name is not None:
