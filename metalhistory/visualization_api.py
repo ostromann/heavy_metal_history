@@ -439,9 +439,10 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     ax.imshow(img, extent=[-2, 2, -1.5, 2.5])
     pos = nx.circular_layout(G)
     pos_outer = {}
-    OFFSET = 1.05  # offset on the y axis
+    X_OFFSET = 1.1
+    Y_OFFSET = 1.25 # y-axis offset needs to be larger so labels have enough space
     for k, v in pos.items():
-        pos_outer[k] = (v[0]*(OFFSET+0.5), v[1]*(OFFSET+0.2))
+        pos_outer[k] = (v[0]*(X_OFFSET), v[1]*(Y_OFFSET))
 
     nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * 10 for v in n_weights.values()], node_color='#333333', edge_color='white', width=[math.log(v, 3) * 1.0 for v in e_weights], with_labels=False)
     nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * 7 for v in n_weights.values()], node_color='white')
