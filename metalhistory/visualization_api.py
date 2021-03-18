@@ -470,7 +470,6 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * SHADOW_NODE_SIZE for v in n_weights.values()], node_color=SHADOW_NODE_COLOR, edge_color='white', width=[math.log(v, EDGE_WIDTH_LOG_BASE) * EDGE_WIDTH for v in e_weights], with_labels=False)
     
     nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * NODE_SIZE for v in n_weights.values()], node_color=NODE_COLOR)
-    nx.draw_networkx_labels(G, pos_outer, font_color='darkgrey', font_weight='bold')
     nx.draw_networkx_labels(G, pos_outer, font_color=LABEL_FONT_COLOR, font_weight=LABEL_FONT_WEIGHT)
     plt.xlim(X_LIMIT)
     plt.ylim(Y_LIMIT)
