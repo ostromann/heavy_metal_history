@@ -7,7 +7,7 @@ dependencies:
   - xmltodict==0.12.0
   - pandas==1.1.5
   - wordcloud==1.8.1
-  - pytest==3.3.2
+  - pytest==6.2.2
   - squarify==0.4.3
   - networkx==2.5
   - numpy==1.19.2
