@@ -488,9 +488,3 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     plt.close("all")
 
     return fig
-
-
-
-
-
-
