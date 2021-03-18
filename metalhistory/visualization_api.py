@@ -432,26 +432,50 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     n_weights = nx.get_node_attributes(G, 'weight')
     edges,e_weights = zip(*nx.get_edge_attributes(G,'weight').items())    
 
+    # Plot constants for tag graph
+    FIG_SIZE = (12,10)
 
-    plt.figure(1,figsize=(12,10)) 
-    ax = plt.axes()
-    img = plt.imread("assets/coal_bg_crop.jpg")
-    ax.imshow(img, extent=[-2, 2, -1.5, 2.5])
-    pos = nx.circular_layout(G)
-    pos_outer = {}
     X_OFFSET = 1.1
     Y_OFFSET = 1.25 # y-axis offset needs to be larger so labels have enough space
+    X_LIMIT = [-2,2]
+    Y_LIMIT = [-1.5,2]
+    IMG_EXTENT = X_LIMIT + Y_LIMIT
+
+    NODE_SIZE = 7
+    NODE_COLOR = 'white'
+    SHADOW_NODE_SIZE = 10
+    SHADOW_NODE_COLOR = '#333333'
+
+    EDGE_WIDTH= 1.0
+    EDGE_WIDTH_LOG_BASE = 3 # Base 10 was too extreme, base 2 too small
+
+    LABEL_FONT_COLOR = 'white'
+    LABEL_FONT_WEIGHT = 'bold'
+
+    TITLE_X_POS = -1.2
+    TITLE_Y_POS = 1.5
+    TITLE_FONT_SIZE = 28
+    TITLE_FONT_COLOR = 'white'
+
+    # Create figure
+    plt.figure(1,figsize=FIG_SIZE) 
+    ax = plt.axes()
+    img = plt.imread("assets/coal_bg_crop.jpg")
+    ax.imshow(img, extent=IMG_EXTENT)
+    pos = nx.circular_layout(G)
+    pos_outer = {}
     for k, v in pos.items():
         pos_outer[k] = (v[0]*(X_OFFSET), v[1]*(Y_OFFSET))
 
-    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * 10 for v in n_weights.values()], node_color='#333333', edge_color='white', width=[math.log(v, 3) * 1.0 for v in e_weights], with_labels=False)
-    nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * 7 for v in n_weights.values()], node_color='white')
+    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * SHADOW_NODE_SIZE for v in n_weights.values()], node_color=SHADOW_NODE_COLOR, edge_color='white', width=[math.log(v, EDGE_WIDTH_LOG_BASE) * EDGE_WIDTH for v in e_weights], with_labels=False)
+    
+    nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * NODE_SIZE for v in n_weights.values()], node_color=NODE_COLOR)
     nx.draw_networkx_labels(G, pos_outer, font_color='darkgrey', font_weight='bold')
-    nx.draw_networkx_labels(G, pos_outer, font_color='white', font_weight='bold')
-    plt.xlim([-2,2])
-    plt.ylim([-1.5,2])
+    nx.draw_networkx_labels(G, pos_outer, font_color=LABEL_FONT_COLOR, font_weight=LABEL_FONT_WEIGHT)
+    plt.xlim(X_LIMIT)
+    plt.ylim(Y_LIMIT)
 
-    ax.text(-1.2,1.5, 'Heavy Metal Genre Relations', size=28, color='white')
+    ax.text(TITLE_X_POS, TITLE_Y_POS, 'Heavy Metal Genre Relations', size=TITLE_FONT_SIZE, color=TITLE_FONT_COLOR)
     
     fig = plt.gcf()
     if file_name is not None:
