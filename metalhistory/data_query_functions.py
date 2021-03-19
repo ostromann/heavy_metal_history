@@ -83,7 +83,9 @@ class LastFM():
         request_str = self.base_str + self.api_str + '&method='+method
         
         for key in kwargs.keys():
-            request_str += '&' + key + '=' + self.clean_string(kwargs[key])
+            if key not in ['fields']:
+                print(key, kwargs[key])
+                request_str += '&' + key + '=' + self.clean_string(kwargs[key])
         
         if format_spec is not None:
             if format_spec == 'json':
