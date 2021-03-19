@@ -3,6 +3,7 @@
 In this project we will gather statistics from LastFM and Spotify to analyse and visualise the most influencial Heavy Metal albums in history.
 
 [![Python-package Actions Status](https://github.com/ostromann/heavy_metal_history/workflows/python-package/badge.svg)](https://github.com/ostromann/python-package/actions)
+[![Python-package-conda Actions Status](https://github.com/ostromann/heavy_metal_history/workflows/python-package-conda/badge.svg)](https://github.com/ostromann/python-package-conda/actions)
 
 
 ## Motivation
