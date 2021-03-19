@@ -23,6 +23,32 @@ import matplotlib.pyplot as plt
 
 DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums.csv'
 
+def load_data(dataset):
+    """
+    Loads a dataset as Pandas DataFrame. Inputs can be either a filepath to a csv, a Pandas DataFrame or None.
+    If None the dataset indicate in global constant is loaded.
+
+    Parameters
+    ----------
+
+    dataset : Name of the input csv file or pandas dataframe
+
+    Returns:
+    ----------
+
+    Dataframe
+    """
+    
+    # Load data
+    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
+    if isinstance(dataset, pd.DataFrame):
+        df = dataset
+    elif dataset is not None:
+        df = pd.read_csv(dataset)
+    else:
+        df = pd.read_csv(DATASET)
+    return df
+
 
 def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
     """
@@ -138,13 +164,7 @@ def prune_and_group(threshold=5, dataset=None):
     """
 
     # Load data
-    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
-    if isinstance(dataset, pd.DataFrame):
-        df = dataset
-    elif dataset is not None:
-        df = pd.read_csv(dataset)
-    else:
-        df = pd.read_csv(DATASET)
+    df = load_data(dataset)
 
     
     # consider only relevant index
@@ -254,13 +274,7 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
     """
 
     # Load data
-    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
-    if isinstance(dataset, pd.DataFrame):
-        df = dataset
-    elif dataset is not None:
-        df = pd.read_csv(dataset)
-    else:
-        df = pd.read_csv(DATASET)
+    df = load_data(dataset)
     df = df[['artist', 'album', 'playcount', 'image']]
     df = df.sort_values('playcount', ascending=False)
     if num_albums is not None:
@@ -434,13 +448,7 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     Matplotlib figure of the tag graph.
     """
     # Load data
-    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
-    if isinstance(dataset, pd.DataFrame):
-        df = dataset
-    elif dataset is not None:
-        df = pd.read_csv(dataset)
-    else:
-        df = pd.read_csv(DATASET)
+    df = load_data(dataset)
 
     tag_cooccurrence_list = generate_tag_cooccurrence_list_from_df(df)
     unique_tags = generate_unique_tag_from_list(tag_cooccurrence_list)
