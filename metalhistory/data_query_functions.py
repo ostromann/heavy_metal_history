@@ -329,7 +329,6 @@ class LastFM():
         if mbid is not None:
             response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
             while response.status_code == 503:
-                #TODO: Catch the Retry-After variable!
                 retry_margin = 2
                 retry_after = int(response.headers['Retry-After']) + retry_margin
                 
