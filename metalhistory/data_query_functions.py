@@ -80,10 +80,11 @@ class LastFM():
             URL of the API Request.
 
         """
+        INVALID_KWARGS = ['fields']
         request_str = self.base_str + self.api_str + '&method='+method
         
         for key in kwargs.keys():
-            if key not in ['fields']:
+            if key not in INVALID_KWARGS:
                 print(key, kwargs[key])
                 request_str += '&' + key + '=' + self.clean_string(kwargs[key])
         
