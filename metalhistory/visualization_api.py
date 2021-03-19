@@ -135,10 +135,8 @@ def prune_and_group(threshold=5):
     Return the grouped and pruned dataset.
     """
 
-    try:
-        df = pd.read_csv(DATASET)
-    except FileNotFoundError:
-        print("The specified file could not be loaded.")
+    df = pd.read_csv(DATASET)
+
     
     # consider only relevant index
     df = df[['MA_artist', 'MA_album', 'listeners', 'playcount', 'MA_score']]
