@@ -104,6 +104,16 @@ def test_clean_string():
     cleaned_str = lastFM_obj.clean_string(dirty_str)
     assert cleaned_str == correct_str
 
+def test_clean_string_wrong_input_type():
+    """
+    Test the assertion error of clean_string function.
+    """
+    lastFM_obj = LastFM()
+    not_a_str = ['valid string.']
+    with pytest.raises(AssertionError):
+        cleaned_str = lastFM_obj.clean_string(not_a_str)
+
+
 
 def test_get_album_matches_return_types():
     """
