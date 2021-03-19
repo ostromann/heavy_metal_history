@@ -332,8 +332,8 @@ def generate_unique_tag_from_list(tag_list):
     List of unique tags.
     """
     # Assert tag_list is a list of lists
-    assert isinstance(tag_list, list)
-    assert all(isinstance(x, list) for x in tag_list)
+    assert isinstance(tag_list, list), "'tag_list' is not of type list."
+    assert all(isinstance(x, list) for x in tag_list), "'tag_list' is not a list of lists."
 
     # Get List of unique tags in list of lists
     unique_tags = list(set(list(itertools.chain.from_iterable(tag_list))))
