@@ -23,6 +23,32 @@ import matplotlib.pyplot as plt
 
 DATASET = os.path.abspath(__file__ + "/../../") + '/data/proc_MA_1k_albums.csv'
 
+def load_data(dataset):
+    """
+    Loads a dataset as Pandas DataFrame. Inputs can be either a filepath to a csv, a Pandas DataFrame or None.
+    If None the dataset indicate in global constant is loaded.
+
+    Parameters
+    ----------
+
+    dataset : Name of the input csv file or pandas dataframe
+
+    Returns:
+    ----------
+
+    Dataframe
+    """
+    
+    # Load data
+    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
+    if isinstance(dataset, pd.DataFrame):
+        df = dataset
+    elif dataset is not None:
+        df = pd.read_csv(dataset)
+    else:
+        df = pd.read_csv(DATASET)
+    return df
+
 
 def artist_barplot(min_albums=5, n_artists=30, metric='MA_score', file_name='./images/artist_bar.svg'):
     """
@@ -120,7 +146,7 @@ def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./i
     return artist_df
 
 
-def prune_and_group(threshold=5):
+def prune_and_group(threshold=5, dataset=None):
     """
     Preprocess the dataset with grouping and pruning.
 
@@ -129,16 +155,17 @@ def prune_and_group(threshold=5):
 
     threshold: pruning value, all artist entries with album value < threshold will be removed
 
+    dataset : Name of the input csv file or pandas dataframe
+
     Returns:
     ----------
 
     Return the grouped and pruned dataset.
     """
 
-    try:
-        df = pd.read_csv(DATASET)
-    except FileNotFoundError:
-        print("The specified file could not be loaded.")
+    # Load data
+    df = load_data(dataset)
+
     
     # consider only relevant index
     df = df[['MA_artist', 'MA_album', 'listeners', 'playcount', 'MA_score']]
@@ -236,7 +263,7 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
 
     height : Height of the output image
 
-    dataset : Name of the input csv file
+    dataset : Name of the input csv file or pandas dataframe
 
     image_name : Name of the output image (or None to not save)
 
@@ -247,10 +274,7 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
     """
 
     # Load data
-    if dataset is not None:
-        df = pd.read_csv(dataset)
-    else:
-        df = pd.read_csv(DATASET)
+    df = load_data(dataset)
     df = df[['artist', 'album', 'playcount', 'image']]
     df = df.sort_values('playcount', ascending=False)
     if num_albums is not None:
@@ -331,7 +355,11 @@ def generate_unique_tag_from_list(tag_list):
 
     List of unique tags.
     """
+    # Assert tag_list is a list of lists
+    assert isinstance(tag_list, list), "'tag_list' is not of type list."
+    assert all(isinstance(x, list) for x in tag_list), "'tag_list' is not a list of lists."
 
+    # Get List of unique tags in list of lists
     unique_tags = list(set(list(itertools.chain.from_iterable(tag_list))))
     return unique_tags
 
@@ -393,6 +421,7 @@ def filter_tag_graph(g, n_top_tags, attribute='weight'):
 
     Subgraph filtered for top tags
     """
+    assert isinstance(g, nx.Graph), "'g' must be an undirected Graph (nx.Graph)"
     node_dict = nx.get_node_attributes(g, attribute)
     top_node_keys = nlargest(n_top_tags, node_dict, key = node_dict.get)    
     
@@ -409,7 +438,7 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
 
     n_tags : Number of tags used in the visualisation
 
-    dataset : Name of the input csv file
+    dataset : Name of the input csv file or pandas dataframe
 
     image_name : Name of the output image (or None to not save)
 
@@ -418,7 +447,8 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
 
     Matplotlib figure of the tag graph.
     """
-    df = pd.read_csv(dataset)
+    # Load data
+    df = load_data(dataset)
 
     tag_cooccurrence_list = generate_tag_cooccurrence_list_from_df(df)
     unique_tags = generate_unique_tag_from_list(tag_cooccurrence_list)
@@ -428,25 +458,52 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     n_weights = nx.get_node_attributes(G, 'weight')
     edges,e_weights = zip(*nx.get_edge_attributes(G,'weight').items())    
 
+    # Plot constants for tag graph
+    FIG_SIZE = (12,10)
 
-    plt.figure(1,figsize=(12,10)) 
+    X_OFFSET = 1.1
+    Y_OFFSET = 1.25 # y-axis offset needs to be larger so labels have enough space
+    X_LIMIT = [-2,2]
+    Y_LIMIT = [-1.5,2]
+    IMG_EXTENT = X_LIMIT + Y_LIMIT
+
+    NODE_SIZE = 7
+    NODE_COLOR = 'white'
+    SHADOW_NODE_SIZE = 10
+    SHADOW_NODE_COLOR = '#333333'
+
+    EDGE_WIDTH= 1.0
+    EDGE_WIDTH_LOG_BASE = 3 # Base 10 was too extreme, base 2 too small
+    EDGE_COLOR = 'white'
+
+    LABEL_FONT_COLOR = 'white'
+    LABEL_FONT_WEIGHT = 'bold'
+
+    TITLE_TEXT = 'Heavy Metal Genre Relations'
+    TITLE_X_POS = -1.2
+    TITLE_Y_POS = 1.5
+    TITLE_FONT_SIZE = 28
+    TITLE_FONT_COLOR = 'white'
+
+    BACKGROUND_IMAGE_FILE = "assets/coal_bg_crop.jpg"
+
+    # Create figure
+    plt.figure(1,figsize=FIG_SIZE) 
     ax = plt.axes()
-    img = plt.imread("assets/coal_bg_crop.jpg")
-    ax.imshow(img, extent=[-2, 2, -1.5, 2.5])
+    img = plt.imread(BACKGROUND_IMAGE_FILE)
+    ax.imshow(img, extent=IMG_EXTENT)
     pos = nx.circular_layout(G)
     pos_outer = {}
-    OFFSET = 1.05  # offset on the y axis
     for k, v in pos.items():
-        pos_outer[k] = (v[0]*(OFFSET+0.5), v[1]*(OFFSET+0.2))
+        pos_outer[k] = (v[0]*(X_OFFSET), v[1]*(Y_OFFSET))
 
-    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * 10 for v in n_weights.values()], node_color='#333333', edge_color='white', width=[math.log(v, 3) * 1.0 for v in e_weights], with_labels=False)
-    nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * 7 for v in n_weights.values()], node_color='white')
-    nx.draw_networkx_labels(G, pos_outer, font_color='darkgrey', font_weight='bold')
-    nx.draw_networkx_labels(G, pos_outer, font_color='white', font_weight='bold')
-    plt.xlim([-2,2])
-    plt.ylim([-1.5,2])
+    nx.draw_networkx(G, pos, nodelist=n_weights.keys(), node_size=[v * SHADOW_NODE_SIZE for v in n_weights.values()], node_color=SHADOW_NODE_COLOR, edge_color=EDGE_COLOR, width=[math.log(v, EDGE_WIDTH_LOG_BASE) * EDGE_WIDTH for v in e_weights], with_labels=False)
+    nx.draw_networkx_nodes(G, pos, nodelist=n_weights.keys(), node_size=[v * NODE_SIZE for v in n_weights.values()], node_color=NODE_COLOR)
+    nx.draw_networkx_labels(G, pos_outer, font_color=LABEL_FONT_COLOR, font_weight=LABEL_FONT_WEIGHT)
+    plt.xlim(X_LIMIT)
+    plt.ylim(Y_LIMIT)
 
-    ax.text(-1.2,1.5, 'Heavy Metal Genre Relations', size=28, color='white')
+    ax.text(TITLE_X_POS, TITLE_Y_POS, TITLE_TEXT, size=TITLE_FONT_SIZE, color=TITLE_FONT_COLOR)
     
     fig = plt.gcf()
     if file_name is not None:
@@ -457,9 +514,3 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
     plt.close("all")
 
     return fig
-
-
-
-
-
-
