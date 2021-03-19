@@ -397,6 +397,7 @@ def filter_tag_graph(g, n_top_tags, attribute='weight'):
 
     Subgraph filtered for top tags
     """
+    assert isinstance(g, nx.Graph), "'g' must be an undirected Graph (nx.Graph)"
     node_dict = nx.get_node_attributes(g, attribute)
     top_node_keys = nlargest(n_top_tags, node_dict, key = node_dict.get)    
     
