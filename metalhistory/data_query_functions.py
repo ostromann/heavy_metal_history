@@ -80,10 +80,13 @@ class LastFM():
             URL of the API Request.
 
         """
+        INVALID_KWARGS = ['fields']
         request_str = self.base_str + self.api_str + '&method='+method
         
         for key in kwargs.keys():
-            request_str += '&' + key + '=' + self.clean_string(kwargs[key])
+            if key not in INVALID_KWARGS:
+                print(key, kwargs[key])
+                request_str += '&' + key + '=' + self.clean_string(kwargs[key])
         
         if format_spec is not None:
             if format_spec == 'json':
@@ -109,6 +112,7 @@ class LastFM():
         string
             Cleaned string.
         """
+        assert isinstance(string, str), "'string' is not of type str."
         return urllib.parse.quote(str(string).strip())
         
 
@@ -303,7 +307,7 @@ class LastFM():
         tag_list = []
         ignored_tag_list = []
         for tag in tags['tag']:
-            if type(tag['name'])==str:
+            if isinstance(tag['name'], str):
                 name = tag['name']
                 if tag['name'].lower() in self.config['user settings']['accepted tags']:
                     tag_list.append(tag['name'].lower())
@@ -329,7 +333,6 @@ class LastFM():
         if mbid is not None:
             response = requests.get('http://musicbrainz.org/ws/2/release/' + str(mbid) + '?inc=release-groups&fmt=xml')
             while response.status_code == 503:
-                #TODO: Catch the Retry-After variable!
                 retry_margin = 2
                 retry_after = int(response.headers['Retry-After']) + retry_margin
                 
