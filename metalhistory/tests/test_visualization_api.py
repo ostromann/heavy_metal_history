@@ -352,7 +352,7 @@ def test_generate_tag_network():
     assert G.number_of_nodes() == 4
     assert G.number_of_edges() == 6
     # Check that the edge data is a dict, that 'weight' is a valid key and has correct value
-    assert type(G.get_edge_data('a', 'b')) is dict
+    assert isinstance(G.get_edge_data('a', 'b'), dict)
     assert 'weight' in G.get_edge_data('a', 'b').keys()
     assert G.get_edge_data('a', 'b')['weight'] == 2
     # Check that a sample node is present and has right attribute value

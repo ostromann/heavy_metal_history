@@ -19,11 +19,11 @@ def test_lastfm_init():
 
     # Assert all atributes are there and of correct type
     assert lastFM_obj.api_str is not None
-    assert type(lastFM_obj.api_str) is str
+    assert isinstance(lastFM_obj.api_str, str)
     assert lastFM_obj.base_str is not None
-    assert type(lastFM_obj.base_str) is str
+    assert isinstance(lastFM_obj.base_str, str)
     assert lastFM_obj.config is not None
-    assert type(lastFM_obj.config) is dict
+    assert isinstance(lastFM_obj.config, dict)
     
     # Assert all functions are there
     assert lastFM_obj.authenticate_from_dotenv is not None
@@ -121,9 +121,9 @@ def test_get_album_matches_return_types():
     """
     lastFM_obj = LastFM()
     matches = lastFM_obj.get_album_matches(album='Paranoid')
-    assert type(matches) is dict
+    assert isinstance(matches, dict)
     assert 'results' in matches.keys()
-    assert type(matches['results']) is dict
+    assert isinstance(matches['results'], dict)
     assert 'albummatches' in matches['results'].keys()
 
 
@@ -166,11 +166,11 @@ def test_get_album_info_return_types():
     """
     lastFM_obj = LastFM()
     info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid')
-    assert type(info) is dict
+    assert isinstance(info, dict)
     assert 'name' in info.keys()
-    assert type(info['name']) is str
+    assert isinstance(info['name'], str)
     assert 'tracks' in info.keys()
-    assert type(info['tracks']) is dict
+    assert isinstance(info['tracks'], dict)
 
 
 def test_get_album_info_invalid_args():
@@ -239,7 +239,7 @@ def test_get_album_info_correct_fields():
     info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
                                          fields=fields)
     # Check info is of type dict
-    assert type(info) is dict
+    assert isinstance(info, dict)
     # Check that all fields are present in returned dict
     # Check that the values are not None
     for field in fields:
@@ -256,7 +256,7 @@ def test_get_album_info_incorrect_fields():
     info = lastFM_obj.get_album_info(artist='Black Sabbath', album='Paranoid',
                                          fields=['wrong_field', 'wrong_field_2'])
     # Check info is of type dict
-    assert type(info) is dict
+    assert isinstance(info, dict)
     # Checl that wrong fields get created but have None values
     assert 'wrong_field' in info.keys()
     assert info['wrong_field'] == None
@@ -270,11 +270,11 @@ def test_get_track_info_return_types():
     """
     lastFM_obj = LastFM()
     info = lastFM_obj.get_track_info(artist='Black Sabbath', track='War Pigs')
-    assert type(info) is dict
+    assert isinstance(info, dict)
     assert 'name' in info.keys()
-    assert type(info['name']) is str
+    assert isinstance(info['name'], str)
     assert 'artist' in info.keys()
-    assert type(info['artist']) is dict
+    assert isinstance(info['artist'], dict)
 
 
 def test_get_track_info_invalid_args():
@@ -345,8 +345,8 @@ def test_get_tags():
     # the oracle knows the genre tags corresponding to the requested album
     oracle_tags = ['power metal', 'progressive metal', 'symphonic metal', 'melodic power metal']
 
-    assert type(tags_list) is list
-    assert type(ignored_tags) is list
+    assert isinstance(tags_list, list)
+    assert isinstance(ignored_tags, list)
     for tag in tags_list:
         assert tag in oracle_tags
     for tag in ignored_tags:
@@ -365,7 +365,7 @@ def test_get_release_date():
     # the oracle knows the release date of the requested album
     oracle_date = '2014-06-17'
 
-    assert type(release_date) is str
+    assert isinstance(release_date, str)
     assert release_date == oracle_date
 
 def test_response_formatter():
@@ -378,7 +378,7 @@ def test_response_formatter():
 
     info = lastFM_obj.response_formatter(info_json, fields)
     # Check that returned value is of type dict
-    assert type(info) is dict
+    assert isinstance(info, dict)
     # Check that all fields are present in the dict and their values are not None
     for field in fields:
         assert field in info.keys()

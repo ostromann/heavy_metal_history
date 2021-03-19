@@ -307,7 +307,7 @@ class LastFM():
         tag_list = []
         ignored_tag_list = []
         for tag in tags['tag']:
-            if type(tag['name'])==str:
+            if isinstance(tag['name'], str):
                 name = tag['name']
                 if tag['name'].lower() in self.config['user settings']['accepted tags']:
                     tag_list.append(tag['name'].lower())
