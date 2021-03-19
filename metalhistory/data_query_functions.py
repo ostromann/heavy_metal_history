@@ -109,6 +109,7 @@ class LastFM():
         string
             Cleaned string.
         """
+        assert isinstance(string, str), "'string' is not of type str."
         return urllib.parse.quote(str(string).strip())
         
 
