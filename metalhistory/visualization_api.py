@@ -120,7 +120,7 @@ def artist_cloud(min_albums=5, words_limit=20, metric='MA_score', file_name='./i
     return artist_df
 
 
-def prune_and_group(threshold=5):
+def prune_and_group(threshold=5, dataset=None):
     """
     Preprocess the dataset with grouping and pruning.
 
@@ -129,13 +129,22 @@ def prune_and_group(threshold=5):
 
     threshold: pruning value, all artist entries with album value < threshold will be removed
 
+    dataset : Name of the input csv file or pandas dataframe
+
     Returns:
     ----------
 
     Return the grouped and pruned dataset.
     """
 
-    df = pd.read_csv(DATASET)
+    # Load data
+    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
+    if isinstance(dataset, pd.DataFrame):
+        df = dataset
+    elif dataset is not None:
+        df = pd.read_csv(dataset)
+    else:
+        df = pd.read_csv(DATASET)
 
     
     # consider only relevant index
@@ -234,7 +243,7 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
 
     height : Height of the output image
 
-    dataset : Name of the input csv file
+    dataset : Name of the input csv file or pandas dataframe
 
     image_name : Name of the output image (or None to not save)
 
@@ -245,7 +254,10 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
     """
 
     # Load data
-    if dataset is not None:
+    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
+    if isinstance(dataset, pd.DataFrame):
+        df = dataset
+    elif dataset is not None:
         df = pd.read_csv(dataset)
     else:
         df = pd.read_csv(DATASET)
@@ -412,7 +424,7 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
 
     n_tags : Number of tags used in the visualisation
 
-    dataset : Name of the input csv file
+    dataset : Name of the input csv file or pandas dataframe
 
     image_name : Name of the output image (or None to not save)
 
@@ -421,7 +433,14 @@ def tag_graph(n_tags=18, dataset=None, file_name='./images/tag_graph.svg'):
 
     Matplotlib figure of the tag graph.
     """
-    df = pd.read_csv(dataset)
+    # Load data
+    assert dataset is None or isinstance(dataset, str) or isinstance(dataset, pd.DataFrame), "'dataset' must be None, str or pandas DataFrame"
+    if isinstance(dataset, pd.DataFrame):
+        df = dataset
+    elif dataset is not None:
+        df = pd.read_csv(dataset)
+    else:
+        df = pd.read_csv(DATASET)
 
     tag_cooccurrence_list = generate_tag_cooccurrence_list_from_df(df)
     unique_tags = generate_unique_tag_from_list(tag_cooccurrence_list)
