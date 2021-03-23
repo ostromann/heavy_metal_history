@@ -299,17 +299,14 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
         rect['y2'] = min(width,  math.ceil(rect['y'] + rect['dy']))
 
     # Create the image
-    img = np.zeros((height, width, 3), np.uint8)
+    img = Image.new('RGB', (width, height))
     for i, url in enumerate(df['image']):
         rect = rects[i]
         im = Image.open(requests.get(url, stream=True).raw)
-        im = im.convert('RGB')
         im = im.resize((rect['y2']-rect['y1'], rect['x2']-rect['x1']))
-        im = np.asarray(im)
-        img[rect['x1']:rect['x2'], rect['y1']:rect['y2'], :] = im
+        img.paste(im, box=(rect['y1'], rect['x1'], rect['y2'], rect['x2']))
 
     # Save and return the image
-    img = Image.fromarray(img)
     if image_name is not None:
         dir_name = os.path.dirname(image_name)
         if dir_name != '' and not os.path.exists(dir_name):
