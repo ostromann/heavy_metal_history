@@ -5,10 +5,8 @@ Test routines for the data visualization class
 import metalhistory.visualization_api as vis
 
 import os
-import sys
 from pathlib import Path
 from PIL import Image
-import matplotlib.pyplot as plt
 
 import pandas as pd
 import networkx as nx
