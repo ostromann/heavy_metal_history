@@ -2,7 +2,6 @@ import requests
 from dotenv import load_dotenv
 import numpy as np
 import os
-import sys
 import urllib.parse
 import xmltodict
 import yaml
