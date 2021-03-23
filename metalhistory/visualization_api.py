@@ -271,6 +271,12 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
     The output image as a PIL Image object
     """
 
+    # Assert that input arguments have correct types and values
+    assert num_albums == None or (isinstance(num_albums, int) and num_albums > 0), "'num_albums' must be None or int larger than 0."
+    assert isinstance(width, int) and width > 0, "'width' must be an int larger than 0."
+    assert isinstance(height, int) and height > 0, "'height' must be an int larger than 0."
+    assert image_name == None or isinstance(image_name, str), "'image_name' must be None or str."
+
     # Load data
     df = load_data(dataset)
     df = df[['artist', 'album', 'playcount', 'image']]
