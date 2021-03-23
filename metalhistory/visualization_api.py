@@ -2,8 +2,6 @@
 Class allowing some nice visualization of heavy metal data
 """
 
-from .data_query_functions import LastFM
-
 # visualization libraries
 import numpy as np
 import pandas as pd
@@ -17,7 +15,7 @@ import networkx as nx
 import itertools
 from heapq import nlargest
 
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 
