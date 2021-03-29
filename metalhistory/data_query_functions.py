@@ -308,6 +308,10 @@ class LastFM():
             List of tags.
 
         """
+        
+        # Assert that 'tags' is a dict
+        assert isinstance(tags, dict), "'tags' must be a dict."
+        
         tag_list = []
         ignored_tag_list = []
         for tag in tags['tag']:
