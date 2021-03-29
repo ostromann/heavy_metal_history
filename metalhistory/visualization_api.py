@@ -2,8 +2,6 @@
 Class allowing some nice visualization of heavy metal data
 """
 
-from .data_query_functions import LastFM
-
 # visualization libraries
 import numpy as np
 import pandas as pd
@@ -17,7 +15,7 @@ import networkx as nx
 import itertools
 from heapq import nlargest
 
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 
@@ -273,6 +271,12 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
     The output image as a PIL Image object
     """
 
+    # Assert that input arguments have correct types and values
+    assert num_albums == None or (isinstance(num_albums, int) and num_albums > 0), "'num_albums' must be None or int larger than 0."
+    assert isinstance(width, int) and width > 0, "'width' must be an int larger than 0."
+    assert isinstance(height, int) and height > 0, "'height' must be an int larger than 0."
+    assert image_name == None or isinstance(image_name, str), "'image_name' must be None or str."
+
     # Load data
     df = load_data(dataset)
     df = df[['artist', 'album', 'playcount', 'image']]
@@ -301,17 +305,14 @@ def album_covers(num_albums=100, width=1280, height=720, dataset=None,
         rect['y2'] = min(width,  math.ceil(rect['y'] + rect['dy']))
 
     # Create the image
-    img = np.zeros((height, width, 3), np.uint8)
+    img = Image.new('RGB', (width, height))
     for i, url in enumerate(df['image']):
         rect = rects[i]
         im = Image.open(requests.get(url, stream=True).raw)
-        im = im.convert('RGB')
         im = im.resize((rect['y2']-rect['y1'], rect['x2']-rect['x1']))
-        im = np.asarray(im)
-        img[rect['x1']:rect['x2'], rect['y1']:rect['y2'], :] = im
+        img.paste(im, box=(rect['y1'], rect['x1'], rect['y2'], rect['x2']))
 
     # Save and return the image
-    img = Image.fromarray(img)
     if image_name is not None:
         dir_name = os.path.dirname(image_name)
         if dir_name != '' and not os.path.exists(dir_name):

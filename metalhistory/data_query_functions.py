@@ -2,7 +2,6 @@ import requests
 from dotenv import load_dotenv
 import numpy as np
 import os
-import sys
 import urllib.parse
 import xmltodict
 import yaml
@@ -80,6 +79,11 @@ class LastFM():
             URL of the API Request.
 
         """
+        
+        # Assert that input arguments have correct types
+        assert isinstance(method, str), "'method' must be of type str."
+        assert isinstance(format_spec, str), "'format_spec' must be of type str."
+        
         INVALID_KWARGS = ['fields']
         request_str = self.base_str + self.api_str + '&method='+method
         
@@ -304,6 +308,10 @@ class LastFM():
             List of tags.
 
         """
+        
+        # Assert that 'tags' is a dict
+        assert isinstance(tags, dict), "'tags' must be a dict."
+        
         tag_list = []
         ignored_tag_list = []
         for tag in tags['tag']:
