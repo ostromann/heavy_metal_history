@@ -89,7 +89,7 @@ class LastFM():
         
         for key in kwargs.keys():
             if key not in INVALID_KWARGS:
-                print(key, kwargs[key])
+                # print(key, kwargs[key])
                 request_str += '&' + key + '=' + self.clean_string(kwargs[key])
         
         if format_spec is not None:
@@ -226,6 +226,62 @@ class LastFM():
                     return r_dict
             except ValueError:
                 print('JSONDecodeError while querying for', kwargs['artist'], kwargs['album'])
+                r_data = np.nan
+        except KeyError:
+            r_data = np.nan
+        return r_data
+
+    def get_artist_info(self, verbose=0, **kwargs):
+        """
+        Get the info of an artist on Last.fm. The arguments
+        to the API request are specified as keyword arguments. See
+        https://www.last.fm/api/show/artist.getInfo for a description of
+        required and optional arguments as well as combinations thereof.
+
+        Parameters
+        ----------
+
+        verbose : Verbosity level (higher = more verbose)
+        
+        kwargs : Keyword arguments specifying the album.getInfo API request
+        
+        Raises
+        ----------
+        
+        ValueError : If the arguments are not valid
+
+        Returns
+        ----------
+        dict
+            Album info
+        """
+        
+        # Check that all keyword arguments are valid
+        valid_args = ['artist', 'mbid', 'autocorrect', 'username', 'lang', 'fields']
+        for key in kwargs.keys():
+            if key not in valid_args:
+                raise ValueError('%s is not in the list of valid keyword arguments.' % key)
+        
+        # Check that autocorrect is either 0 or 1
+        autocorrect = kwargs['autocorrect'] if 'autocorrect' in kwargs.keys() else None
+        if autocorrect is not None and autocorrect not in [0, 1, 0., 1., '0', '1']:
+            raise ValueError('autocorrect argument must be either 0 or 1.')
+        
+        method = 'artist.getinfo'
+
+        response = requests.get(self.build_request(method=method, verbose=verbose, **kwargs))
+        if not response.ok:
+            raise RuntimeError('LastFM API responded with status code %s.' % (response.status_code))
+
+        try:
+            try:
+                r_data = requests.get(self.build_request(method=method, verbose=verbose, **kwargs)).json()['artist']
+                fields = kwargs['fields'] if 'fields' in kwargs.keys() else None
+                if fields is not None:
+                    r_dict = self.response_formatter(r_data, fields)
+                    return r_dict
+            except ValueError:
+                print('JSONDecodeError while querying for', kwargs['artist'])
                 r_data = np.nan
         except KeyError:
             r_data = np.nan
